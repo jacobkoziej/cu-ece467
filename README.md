@@ -1,5 +1,7 @@
 # cu-ece467
 
+> The Cooper Union - ECE 467: Natural Language Processing
+
 
 ## Copyright & Licensing
 
