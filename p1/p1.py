@@ -22,6 +22,7 @@ import argparse
 def parser_gen():
     parser = argparse.ArgumentParser(description='text categorization')
     subparser = parser.add_subparsers(
+        dest='mode',
         help='{test,train} -h/--help',
         metavar='mode',
         required=True,
