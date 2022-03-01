@@ -19,7 +19,7 @@
 import argparse
 
 
-def arg_gen():
+def parser_gen():
     parser = argparse.ArgumentParser(description='text categorization')
     subparser = parser.add_subparsers(
         help='{test,train} -h/--help',
@@ -70,8 +70,7 @@ def arg_gen():
 
 
 def main():
-    args = arg_gen()
-    args.parse_args()
+    args = parser_gen().parse_args()
 
 
 if __name__ == '__main__':
