@@ -70,8 +70,21 @@ def parser_gen():
     return parser
 
 
+def tuple_gen(input):
+    tuples = [ ]
+    for line in input.readlines():
+        tuples.append(tuple(line.strip().split()))
+
+    return tuples
+
+
 def main():
     args = parser_gen().parse_args()
+
+    tuples = None
+
+    if args.mode == 'train':
+        tuples = tuple_gen(args.i)
 
 
 if __name__ == '__main__':
