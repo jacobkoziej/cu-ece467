@@ -24,10 +24,19 @@ class Vector:
             self.idf   = None  # inverse document frequency log10(doc_cnt/df)
             self.tfidf = None  # word weight tf * idf
 
-    def __init__(self):
+    def __init__(self, raw):
         self.doc_cnt = 0
         self.feat    = { }
         self.norm    = None
+
+        if isinstance(raw[0], list):
+            for doc in raw:
+                self._doc_process(doc)
+        else:
+            self._doc_process(raw)
+
+    def _doc_process(self, doc):
+        pass
 
 
 class Trainer:
