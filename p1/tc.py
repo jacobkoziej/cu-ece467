@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import nltk.tokenize
+
 
 class Vector:
     class WordWeight:
@@ -42,3 +44,18 @@ class Vector:
 class Trainer:
     def __init__(self, labels):
         self.labels = labels
+
+    def _category_tokenize(self):
+        categories = { }
+
+        for path, category in self.labels:
+            file   = open(path, 'r')
+            tokens = nltk.tokenize.word_tokenize(file.read())
+            file.close()
+
+            try:
+                categories[category].append(tokens)
+            except KeyError:
+                categories[category] = [tokens]
+
+        return categories
