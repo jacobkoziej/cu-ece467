@@ -16,6 +16,7 @@
 
 import math
 import nltk.tokenize
+import pickle
 
 
 class Vector:
@@ -91,3 +92,6 @@ class Trainer:
 
         for category, tokens in cat_tokens.items():
             self.categories[category] = Vector(tokens)
+
+    def export(self, db):
+        pickle.dump(self.categories, db)
