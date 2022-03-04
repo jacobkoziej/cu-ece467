@@ -38,7 +38,19 @@ class Vector:
             self._doc_process(raw)
 
     def _doc_process(self, doc):
-        pass
+        self.doc_cnt += 1
+
+        uniq_feat = set(doc)
+
+        for feat in uniq_feat:
+            try:
+                self.feat[feat].df += 1
+            except KeyError:
+                self.feat[feat] = self.WordWeight()
+                self.feat[feat].df += 1
+
+        for word in doc:
+            self.feat[word].tc += 1
 
 
 class Trainer:
