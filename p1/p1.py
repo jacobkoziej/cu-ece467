@@ -17,6 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import tc
 
 
 def parser_gen():
@@ -85,6 +86,9 @@ def main():
 
     if args.mode == 'train':
         tuples = tuple_gen(args.i)
+        trainer = tc.Trainer(tuples)
+        trainer.train()
+        trainer.export(args.o)
 
 
 if __name__ == '__main__':
