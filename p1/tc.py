@@ -21,7 +21,7 @@ class Vector:
     class WordWeight:
         def __init__(self):
             self.tc    = 0     # term count
-            self.tf    = None  # term frequency log10(tc)
+            self.tf    = None  # term frequency log10(tc + 1)
             self.df    = 0     # document frequency
             self.idf   = None  # inverse document frequency log10(doc_cnt/df)
             self.tfidf = None  # word weight tf * idf
