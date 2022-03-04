@@ -76,5 +76,5 @@ class Trainer:
     def train(self):
         cat_tokens = self._category_tokenize()
 
-        for category in cat_tokens:
-            self.categories[category] = Vector(cat_tokens[category])
+        for category, tokens in cat_tokens.items():
+            self.categories[category] = Vector(tokens)
