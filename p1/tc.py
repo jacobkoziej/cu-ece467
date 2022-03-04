@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import math
 import nltk.tokenize
 
 
@@ -36,6 +37,18 @@ class Vector:
                 self._doc_process(doc)
         else:
             self._doc_process(raw)
+
+        self._calc_word_weight()
+
+    def _calc_word_weight(self):
+        if self.doc_cnt > 1:
+            for _, word in self.feat.items():
+                word.tf = math.log10(word.tc + 1)
+                word.idf = math.log10(self.doc_cnt / word.df)
+                word.tfidf = word.tf * word.idf
+        else:
+            for _, word in self.feat.items():
+                word.tf = math.log10(word.tc + 1)
 
     def _doc_process(self, doc):
         self.doc_cnt += 1
