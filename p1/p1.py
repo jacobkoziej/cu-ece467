@@ -34,7 +34,7 @@ def parser_gen():
         help='input trained database',
         metavar='db',
         required=True,
-        type=argparse.FileType('r'),
+        type=argparse.FileType('rb'),
     )
     test_subparser.add_argument(
         '-i',
@@ -64,7 +64,7 @@ def parser_gen():
         help='output trained database',
         metavar='db',
         required=True,
-        type=argparse.FileType('w'),
+        type=argparse.FileType('wb'),
     )
 
     return parser
