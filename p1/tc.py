@@ -43,7 +43,8 @@ class Vector:
 
 class Trainer:
     def __init__(self, labels):
-        self.labels = labels
+        self.labels     = labels
+        self.categories = { }
 
     def _category_tokenize(self):
         categories = { }
@@ -59,3 +60,9 @@ class Trainer:
                 categories[category] = [tokens]
 
         return categories
+
+    def train(self):
+        cat_tokens = self._category_tokenize()
+
+        for category in cat_tokens:
+            self.categories[category] = Vector(cat_tokens[category])
