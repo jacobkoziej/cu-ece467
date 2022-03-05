@@ -41,6 +41,15 @@ class Vector:
             self._doc_process(raw)
 
         self._calc_word_weight()
+        self._calc_norm()
+
+    def _calc_norm(self):
+        tmp = 0
+
+        for _, feat in self.feat.items():
+            tmp += feat.tfidf ** 2
+
+        self.norm = math.sqrt(tmp)
 
     def _calc_word_weight(self):
         if self.doc_cnt > 1:
