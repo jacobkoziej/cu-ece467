@@ -110,31 +110,30 @@ class Vector:
 
 class Trainer:
     def __init__(self, labels):
-        self.labels     = labels
-        self.categories = { }
+        self.cat = { }
 
-    def _category_tokenize(self):
-        categories = { }
+    def _category_tokenize(self, labels):
+        cat_tokens = { }
 
-        for path, category in self.labels:
+        for path, category in labels:
             file   = open(path, 'r')
             tokens = nltk.tokenize.word_tokenize(file.read())
             file.close()
 
             try:
-                categories[category].append(tokens)
+                cat_tokens[category].append(tokens)
             except KeyError:
-                categories[category] = [tokens]
+                cat_tokens[category] = [tokens]
 
-        return categories
+        return cat_tokens
 
-    def train(self):
-        cat_tokens = self._category_tokenize()
+    def train(self, labels):
+        cat_tokens = self._category_tokenize(labels)
 
         for category, tokens in cat_tokens.items():
             vec = Vector()
             vec.process(tokens)
-            self.categories[category] = vec
+            self.cat[category] = vec
 
     def export(self, db):
-        pickle.dump(self.categories, db)
+        pickle.dump(self.cat, db)

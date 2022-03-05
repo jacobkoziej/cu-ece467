@@ -86,9 +86,8 @@ def main():
     tuples = None
 
     if args.mode == 'train':
-        tuples = tuple_gen(args.i)
         trainer = tc.Trainer(tuples)
-        trainer.train()
+        trainer.train(tuple_gen(args.i))
         trainer.export(args.o)
 
 
