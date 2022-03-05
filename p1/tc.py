@@ -57,16 +57,6 @@ class Vector:
         for word in doc:
             self.feat[word].tc += 1
 
-    def dot_prod(self, vec):
-        dot_prod = 0
-
-        for word in self.feat:
-            if word in vec.feat:
-                dot_prod += self.feat[word].tfidf \
-                    * ((self.feat[word].tf * vec.feat[word].idf) ** 2)
-
-        return dot_prod
-
     def calc_norm(self, parent=None):
         norm = 0
 
@@ -84,6 +74,16 @@ class Vector:
         self.doc_cnt = 0
         self.feat    = { }
         self.norm    = None
+
+    def dot_prod(self, vec):
+        dot_prod = 0
+
+        for word in self.feat:
+            if word in vec.feat:
+                dot_prod += self.feat[word].tfidf \
+                    * ((self.feat[word].tf * vec.feat[word].idf) ** 2)
+
+        return dot_prod
 
     def process(self, raw):
         if isinstance(raw[0], list):
@@ -127,6 +127,9 @@ class Trainer:
 
         return cat_tokens
 
+    def export(self, db):
+        pickle.dump(self.cat, db)
+
     def train(self, labels):
         cat_tokens = self._category_tokenize(labels)
 
@@ -134,6 +137,3 @@ class Trainer:
             vec = Vector()
             vec.process(tokens)
             self.cat[category] = vec
-
-    def export(self, db):
-        pickle.dump(self.cat, db)
