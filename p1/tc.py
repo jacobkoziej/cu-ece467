@@ -30,9 +30,7 @@ class Vector:
             self.tfidf = None  # word weight tf * idf
 
     def __init__(self):
-        self.doc_cnt = 0
-        self.feat    = { }
-        self.norm    = None
+        self.clear()
 
     def _calc_norm(self):
         tmp = 0
@@ -66,6 +64,11 @@ class Vector:
 
         for word in doc:
             self.feat[word].tc += 1
+
+    def clear(self):
+        self.doc_cnt = 0
+        self.feat    = { }
+        self.norm    = None
 
     def process(self, raw):
         if isinstance(raw[0], list):
