@@ -57,6 +57,16 @@ class Vector:
         for word in doc:
             self.feat[word].tc += 1
 
+    def dot_prod(self, vec):
+        dot_prod = 0
+
+        for word in self.feat:
+            if word in vec.feat:
+                dot_prod += self.feat[word].tfidf \
+                    * ((self.feat[word].tf * vec.feat[word].idf) ** 2)
+
+        return dot_prod
+
     def calc_norm(self, parent=None):
         norm = 0
 
@@ -87,6 +97,15 @@ class Vector:
             self._doc_process(raw)
             self._calc_word_weight()
 
+    def sim(self, vec):
+        dot_prod = Vector.dot_prod(self, vec)
+        norm     = 0
+
+        for word in self.feat:
+            if word in vec.feat:
+                norm += (self.feat[word].tf * vec.feat[word].idf) ** 2
+
+        return dot_prod / (self.norm * math.sqrt(norm))
 
 
 class Trainer:
