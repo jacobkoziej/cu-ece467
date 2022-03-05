@@ -32,14 +32,6 @@ class Vector:
     def __init__(self):
         self.clear()
 
-    def _calc_norm(self):
-        tmp = 0
-
-        for _, feat in self.feat.items():
-            tmp += feat.tfidf ** 2
-
-        self.norm = math.sqrt(tmp)
-
     def _calc_word_weight(self):
         if self.doc_cnt > 1:
             for _, word in self.feat.items():
@@ -65,6 +57,19 @@ class Vector:
         for word in doc:
             self.feat[word].tc += 1
 
+    def calc_norm(self, parent=None):
+        norm = 0
+
+        if parent is None:
+            for _, feat in self.feat.items():
+                norm += feat.tfidf ** 2
+        else:
+            for word in self.feat:
+                if word in parent.feat:
+                    norm += (self.feat[word].tf * parent.feat[word].idf) ** 2
+
+        return math.sqrt(norm)
+
     def clear(self):
         self.doc_cnt = 0
         self.feat    = { }
@@ -74,11 +79,14 @@ class Vector:
         if isinstance(raw[0], list):
             for doc in raw:
                 self._doc_process(doc)
+
+            self._calc_word_weight()
+            self.norm = self.calc_norm()
+
         else:
             self._doc_process(raw)
+            self._calc_word_weight()
 
-        self._calc_word_weight()
-        self._calc_norm()
 
 
 class Trainer:
