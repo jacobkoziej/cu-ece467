@@ -29,19 +29,10 @@ class Vector:
             self.idf   = None  # inverse document frequency log10(doc_cnt/df)
             self.tfidf = None  # word weight tf * idf
 
-    def __init__(self, raw):
+    def __init__(self):
         self.doc_cnt = 0
         self.feat    = { }
         self.norm    = None
-
-        if isinstance(raw[0], list):
-            for doc in raw:
-                self._doc_process(doc)
-        else:
-            self._doc_process(raw)
-
-        self._calc_word_weight()
-        self._calc_norm()
 
     def _calc_norm(self):
         tmp = 0
@@ -76,6 +67,16 @@ class Vector:
         for word in doc:
             self.feat[word].tc += 1
 
+    def process(self, raw):
+        if isinstance(raw[0], list):
+            for doc in raw:
+                self._doc_process(doc)
+        else:
+            self._doc_process(raw)
+
+        self._calc_word_weight()
+        self._calc_norm()
+
 
 class Trainer:
     def __init__(self, labels):
@@ -101,7 +102,9 @@ class Trainer:
         cat_tokens = self._category_tokenize()
 
         for category, tokens in cat_tokens.items():
-            self.categories[category] = Vector(tokens)
+            vec = Vector()
+            vec.process(tokens)
+            self.categories[category] = vec
 
     def export(self, db):
         pickle.dump(self.categories, db)
