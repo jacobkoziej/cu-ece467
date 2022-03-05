@@ -108,6 +108,11 @@ class Vector:
         return dot_prod / (self.norm * math.sqrt(norm))
 
 
+class Tester:
+    def __init__(self, db):
+        self.cat = db
+
+
 class Trainer:
     def __init__(self, labels):
         self.cat = { }
