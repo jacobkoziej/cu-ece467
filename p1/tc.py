@@ -110,7 +110,7 @@ class Vector:
 
 class Tester:
     def __init__(self, db):
-        self.cat = db
+        self.db = db
 
 
 class Trainer:
