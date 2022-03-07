@@ -80,6 +80,14 @@ def tuple_gen(input):
     return tuples
 
 
+def list_gen(input):
+    list = [ ]
+    for line in input.readlines():
+        list.append(line.strip())
+
+    return list
+
+
 def main():
     args = parser_gen().parse_args()
 
