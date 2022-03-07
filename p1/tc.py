@@ -81,7 +81,7 @@ class Vector:
         for word in self.feat:
             if word in vec.feat:
                 dot_prod += self.feat[word].tfidf \
-                    * ((self.feat[word].tf * vec.feat[word].idf) ** 2)
+                    * ((vec.feat[word].tf * self.feat[word].idf) ** 2)
 
         return dot_prod
 
@@ -103,7 +103,7 @@ class Vector:
 
         for word in self.feat:
             if word in vec.feat:
-                norm += (self.feat[word].tf * vec.feat[word].idf) ** 2
+                norm += (vec.feat[word].tf * self.feat[word].idf) ** 2
 
         return dot_prod / (self.norm * math.sqrt(norm))
 
