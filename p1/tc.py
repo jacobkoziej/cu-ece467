@@ -112,6 +112,37 @@ class Tester:
     def __init__(self, db):
         self.db = db
 
+    def _list_tokenize(self, list):
+        tokens = [ ]
+
+        for path in list:
+            file = open(path, 'r')
+            tokens.append((path, nltk.tokenize.word_tokenize(file.read())))
+            file.close()
+
+        return tokens
+
+    def test(self, list):
+        uncat_tokens = self._list_tokenize(list)
+        tuples       = [ ]
+
+        name = [ ]
+        cat  = [ ]
+        for k, v in self.db.items():
+            name.append(k)
+            cat.append(v)
+
+        for (path, token) in uncat_tokens:
+            tmp = Vector()
+            tmp.process(token)
+            out = [ ]
+
+            for vec in cat:
+                out.append(Vector.sim(vec, tmp))
+
+            tuples.append((path, name[out.index(max(out))]))
+
+        return tuples
 
 class Trainer:
     def __init__(self, labels):
