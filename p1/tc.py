@@ -27,6 +27,9 @@ class Database:
 
 
 class Processor:
+    def __init__(self, insensitive=False):
+        self.insensitive = insensitive
+
     def gen_cat_file_tuples(self, file):
         tuples = [ ]
         for line in file.readlines():
@@ -44,6 +47,9 @@ class Processor:
         return list
 
     def tokenize(self, string):
+        if self.insensitive:
+            string = string.lower()
+
         return word_tokenize(string)
 
     def write_cat_file_tuples(self, tuples, file):
@@ -106,9 +112,12 @@ class Tester:
 
 
 class Trainer:
-    def __init__(self, verbose=False):
+    def __init__(self, insensitive=True, verbose=False):
         self.db      = Database()
         self.verbose = verbose
+
+        p = self.db.processor
+        p.insensitive = insensitive
 
     def dump(self, file):
         if self.verbose:
