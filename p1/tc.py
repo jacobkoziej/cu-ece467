@@ -19,6 +19,10 @@ class Database:
         self.cat = { }
 
 
+class Tester:
+    pass
+
+
 class Vector:
     class WordWeight:
         def __init__(self):
