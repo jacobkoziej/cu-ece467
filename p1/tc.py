@@ -26,7 +26,15 @@ class Database:
 
 
 class Tester:
-    pass
+    def __init__(self, db=None, verbose=False):
+        self.db      = db
+        self.verbose = verbose
+
+    def load(self, file):
+        if self.verbose:
+            print(f'Importing database from file: {file.name}')
+
+        self.db = pickle.load(file)
 
 
 class Trainer:
