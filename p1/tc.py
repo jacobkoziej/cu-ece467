@@ -55,7 +55,7 @@ class Trainer:
 
         return tuples
 
-    def process(self, cat_tokens):
+    def train(self, cat_tokens):
         for (cat, tokens) in cat_tokens:
             try:
                 self.db.cat[cat].add_doc(tokens)
