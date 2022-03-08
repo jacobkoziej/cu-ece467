@@ -99,6 +99,22 @@ class Vector:
         for word in tokens:
             self.feat[word].tc += 1
 
+    def calc_norm(self, inherit=None):
+        sum = 0.0
+
+        if inherit is None:
+            for _, feat in self.feat.items():
+                sum += feat.tfidf ** 2
+
+            self.norm = math.sqrt(sum)
+            return self.norm
+        else:
+            for word, feat in self.feat.items():
+                if word in inherit.feat:
+                    sum += (feat.tf * inherit.feat[word].idf) ** 2
+
+            return math.sqrt(sum)
+
     def calc_word_weight(self):
         if self.doc_cnt > 1:
             for _, word in self.feat.items():
