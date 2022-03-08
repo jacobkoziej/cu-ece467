@@ -58,6 +58,42 @@ class Tester:
 
         self.db = pickle.load(file)
 
+    def test(self, file):
+        processor = self.db.processor
+
+        token_tuples = [ ]
+        for path in processor.gen_file_list(file):
+            if self.verbose:
+                print(f'Tokenizing file: {path}')
+
+            f = open(path)
+            token_tuples.append((path, processor.tokenize(f.read())))
+            f.close()
+
+        vec_tuples = [ ]
+        for (path, tokens) in token_tuples:
+            if self.verbose:
+                print(f'Caching vector: {path}')
+
+                vec = Vector()
+                vec.add_doc(tokens)
+                vec.cache()
+                vec_tuples.append((path, vec))
+
+        categories = list(self.db.cat.keys())
+        cat_tuples = [ ]
+        for (path, vec) in vec_tuples:
+            similarities = [ ]
+            for cat in categories:
+                similarities.append(Vector.sim(self.db.cat[cat], vec))
+
+            cat = categories[similarities.index(max(similarities))]
+
+            if self.verbose:
+                print(f'Labeled file: {cat} {path}')
+
+            cat_tuples.append((cat, path))
+
 
 class Trainer:
     def __init__(self, verbose=False):
