@@ -63,6 +63,12 @@ class Trainer:
                 self.db.cat[cat] = Vector()
                 self.db.cat[cat].add_doc(tokens)
 
+        for cat, vec in self.db.cat.items():
+            if self.verbose:
+                print(f'Caching vector: {cat}')
+
+            vec.cache()
+
 
 class Vector:
     class WordWeight:
@@ -77,7 +83,7 @@ class Vector:
             return str(vars(self))
 
     def __init__(self):
-        self.cache   = False
+        self.cached  = False
         self.doc_cnt = 0
         self.feat    = { }
         self.norm    = None
@@ -85,21 +91,7 @@ class Vector:
     def __str__(self):
         return str(vars(self))
 
-    def add_doc(self, tokens):
-        self.cache = False
-        self.doc_cnt += 1
-
-        for word in set(tokens):
-            try:
-                self.feat[word].df += 1
-            except KeyError:
-                self.feat[word] = self.WordWeight()
-                self.feat[word].df += 1
-
-        for word in tokens:
-            self.feat[word].tc += 1
-
-    def calc_norm(self, inherit=None):
+    def _calc_norm(self, inherit=None):
         sum = 0.0
 
         if inherit is None:
@@ -115,7 +107,7 @@ class Vector:
 
             return math.sqrt(sum)
 
-    def calc_word_weight(self):
+    def _calc_word_weight(self):
         if self.doc_cnt > 1:
             for _, word in self.feat.items():
                 word.tf = math.log10(word.tc + 1)
@@ -125,4 +117,21 @@ class Vector:
             for _, word in self.feat.items():
                 word.tf = math.log10(math.tc + 1)
 
-        self.cache = True
+    def add_doc(self, tokens):
+        self.cached = False
+        self.doc_cnt += 1
+
+        for word in set(tokens):
+            try:
+                self.feat[word].df += 1
+            except KeyError:
+                self.feat[word] = self.WordWeight()
+                self.feat[word].df += 1
+
+        for word in tokens:
+            self.feat[word].tc += 1
+
+    def cache(self):
+        self._calc_word_weight()
+        self._calc_norm()
+        self.cached = True
