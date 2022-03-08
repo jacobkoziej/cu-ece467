@@ -154,8 +154,7 @@ class Trainer:
 class Vector:
     class WordWeight:
         def __init__(self):
-            self.tc    = 0     # term count
-            self.tf    = None  # term frequency
+            self.tf    = 0     # term frequency
             self.df    = 0     # document frequency
             self.idf   = None  # inverse document frequency
             self.tfidf = None  # word weight
@@ -199,7 +198,6 @@ class Vector:
 
     def _calc_word_weight(self):
         for _, word in self.feat.items():
-            word.tf = math.log10(word.tc + 1)
             word.idf = math.log10(self.doc_cnt / word.df)
             word.tfidf = word.tf * word.idf
 
@@ -215,7 +213,7 @@ class Vector:
                 self.feat[word].df += 1
 
         for word in tokens:
-            self.feat[word].tc += 1
+            self.feat[word].tf += 1
 
     def cache(self):
         self._calc_word_weight()
