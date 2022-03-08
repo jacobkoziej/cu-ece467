@@ -56,7 +56,7 @@ class Trainer:
         return tuples
 
     def process(self, cat_tokens):
-        for cat, tokens in cat_tokens.items():
+        for (cat, tokens) in cat_tokens:
             try:
                 self.db.cat[cat].add_doc(tokens)
             except KeyError:
@@ -93,14 +93,17 @@ class Vector:
             try:
                 self.feat[word].df += 1
             except KeyError:
-                self.feat[word] = Vector()
+                self.feat[word] = self.WordWeight()
                 self.feat[word].df += 1
+
+        for word in tokens:
+            self.feat[word].tc += 1
 
     def calc_word_weight(self):
         if self.doc_cnt > 1:
             for _, word in self.feat.items():
-                word.tf = math.log10(math.tc + 1)
-                word.idf = math.log10(self.doc_cnt / math.df)
+                word.tf = math.log10(word.tc + 1)
+                word.idf = math.log10(self.doc_cnt / word.df)
                 word.tfidf = word.tf * word.idf
         else:
             for _, word in self.feat.items():
