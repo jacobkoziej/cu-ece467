@@ -28,6 +28,7 @@ class Tester:
 
 class Trainer:
     def __init__(self, verbose=False):
+        self.db      = Database()
         self.verbose = verbose
 
     def gen_file_tuples(self, file):
@@ -51,6 +52,14 @@ class Trainer:
             f.close()
 
         return tuples
+
+    def process(self, cat_tokens):
+        for cat, tokens in cat_tokens.items():
+            try:
+                self.db.cat[cat].add_doc(tokens)
+            except KeyError:
+                self.db.cat[cat] = Vector()
+                self.db.cat[cat].add_doc(tokens)
 
 
 class Vector:
