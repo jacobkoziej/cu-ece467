@@ -27,7 +27,7 @@ class Database:
 
 
 class Processor:
-    def gen_file_tuples(self, file):
+    def gen_cat_file_tuples(self, file):
         tuples = [ ]
         for line in file.readlines():
             tmp = line.strip().split()
@@ -67,7 +67,7 @@ class Trainer:
         processor  = self.db.processor
         normalized = [ ]
 
-        for (cat, path) in processor.gen_file_tuples(labels):
+        for (cat, path) in processor.gen_cat_file_tuples(labels):
             if self.verbose:
                 print(f'Tokenizing file: {cat} {path}')
 
