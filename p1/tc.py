@@ -27,6 +27,9 @@ class Tester:
 
 
 class Trainer:
+    def __init__(self, verbose=False):
+        self.verbose = verbose
+
     def gen_file_tuples(self, file):
         tuples = [ ]
         for line in file.readlines():
@@ -39,6 +42,9 @@ class Trainer:
     def gen_token_tuples(self, files):
         tuples = [ ]
         for (cat, path) in files:
+            if self.verbose:
+                print(f'Tokenizing file: {cat} {path}')
+
             f = open(path, 'r')
             tokens = word_tokenize(f.read())
             tuples.append((cat, tokens))
