@@ -46,10 +46,15 @@ class Processor:
     def tokenize(self, string):
         return word_tokenize(string)
 
+    def write_cat_file_tuples(self, tuples, file):
+        for (cat, path) in tuples:
+            file.write(f'{path} {cat}\n')
+
 
 class Tester:
     def __init__(self, db=None, verbose=False):
         self.db      = db
+        self.predict = [ ]
         self.verbose = verbose
 
     def load(self, file):
@@ -93,6 +98,11 @@ class Tester:
                 print(f'Labeled file: {cat} {path}')
 
             cat_tuples.append((cat, path))
+
+        self.predict = cat_tuples
+
+    def write(self, file):
+        self.db.processor.write_cat_file_tuples(self.predict, file)
 
 
 class Trainer:
