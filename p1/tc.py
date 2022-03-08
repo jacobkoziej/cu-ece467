@@ -27,7 +27,9 @@ class Trainer:
     def gen_file_tuples(self, file):
         tuples = [ ]
         for line in file.readlines():
-            tuples.append(tuple(line.strip().split()))
+            tmp = line.strip().split()
+            tmp.reverse()
+            tuples.append(tuple(tmp))
 
         return tuples
 
