@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from nltk.tokenize import word_tokenize
+
+
 class Database:
     def __init__(self):
         self.cat = { }
@@ -30,6 +33,16 @@ class Trainer:
             tmp = line.strip().split()
             tmp.reverse()
             tuples.append(tuple(tmp))
+
+        return tuples
+
+    def gen_token_tuples(self, files):
+        tuples = [ ]
+        for (cat, path) in files:
+            f = open(path, 'r')
+            tokens = word_tokenize(f.read())
+            tuples.append((cat, tokens))
+            f.close()
 
         return tuples
 
