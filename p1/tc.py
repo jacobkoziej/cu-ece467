@@ -23,6 +23,10 @@ class Tester:
     pass
 
 
+class Trainer:
+    pass
+
+
 class Vector:
     class WordWeight:
         def __init__(self):
