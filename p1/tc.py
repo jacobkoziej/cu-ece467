@@ -13,3 +13,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+class Vector:
+    class WordWeight:
+        def __init__(self):
+            self.tc    = 0     # term count
+            self.tf    = None  # term frequency
+            self.df    = 0     # document frequency
+            self.idf   = None  # inverse document frequency
+            self.tfidf = None  # word weight
+
+        def __str__(self):
+            return str(vars(self))
+
+    def __init__(self):
+        self.doc_cnt = 0
+        self.feat    = { }
+        self.norm    = None
+
+    def __str__(self):
+        return str(vars(self))
