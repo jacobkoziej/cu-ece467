@@ -14,6 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+class Database:
+    def __init__(self):
+        self.cat = { }
+
+
 class Vector:
     class WordWeight:
         def __init__(self):
