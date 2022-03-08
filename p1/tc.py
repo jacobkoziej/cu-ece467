@@ -140,3 +140,15 @@ class Vector:
         self._calc_word_weight()
         self._calc_norm()
         self.cached = True
+
+    def sim(self, vec):
+        if not self.cached:
+            self.cache()
+
+        if not vec.cached:
+            vec.cache()
+
+        dot_prod = Vector._calc_dot_prod(self, vec)
+        norm = self.norm * vec._calc_norm(self)
+
+        return dot_prod / norm
