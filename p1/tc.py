@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import math
+
 from nltk.tokenize import word_tokenize
 
 
@@ -93,3 +95,15 @@ class Vector:
             except KeyError:
                 self.feat[word] = Vector()
                 self.feat[word].df += 1
+
+    def calc_word_weight(self):
+        if self.doc_cnt > 1:
+            for _, word in self.feat.items():
+                word.tf = math.log10(math.tc + 1)
+                word.idf = math.log10(self.doc_cnt / math.df)
+                word.tfidf = word.tf * word.idf
+        else:
+            for _, word in self.feat.items():
+                word.tf = math.log10(math.tc + 1)
+
+        self.cache = True
