@@ -117,14 +117,10 @@ class Vector:
             return math.sqrt(sum)
 
     def _calc_word_weight(self):
-        if self.doc_cnt > 1:
-            for _, word in self.feat.items():
-                word.tf = math.log10(word.tc + 1)
-                word.idf = math.log10(self.doc_cnt / word.df)
-                word.tfidf = word.tf * word.idf
-        else:
-            for _, word in self.feat.items():
-                word.tf = math.log10(math.tc + 1)
+        for _, word in self.feat.items():
+            word.tf = math.log10(word.tc + 1)
+            word.idf = math.log10(self.doc_cnt / word.df)
+            word.tfidf = word.tf * word.idf
 
     def add_doc(self, tokens):
         self.cached = False
