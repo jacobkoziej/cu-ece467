@@ -72,31 +72,8 @@ def parser_gen():
     return parser
 
 
-def tuple_gen(input):
-    tuples = [ ]
-    for line in input.readlines():
-        tuples.append(tuple(line.strip().split()))
-
-    return tuples
-
-
-def list_gen(input):
-    list = [ ]
-    for line in input.readlines():
-        list.append(line.strip())
-
-    return list
-
-
 def main():
     args = parser_gen().parse_args()
-
-    tuples = None
-
-    if args.mode == 'train':
-        trainer = tc.Trainer(tuples)
-        trainer.train(tuple_gen(args.i))
-        trainer.export(args.o)
 
 
 if __name__ == '__main__':
