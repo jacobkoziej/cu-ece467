@@ -22,7 +22,22 @@ from nltk.tokenize import word_tokenize
 
 class Database:
     def __init__(self):
-        self.cat = { }
+        self.cat       = { }
+        self.processor = Processor()
+
+
+class Processor:
+    def gen_file_tuples(self, file):
+        tuples = [ ]
+        for line in file.readlines():
+            tmp = line.strip().split()
+            tmp.reverse()
+            tuples.append(tuple(tmp))
+
+        return tuples
+
+    def tokenize(self, string):
+        return word_tokenize(string)
 
 
 class Tester:
@@ -48,30 +63,19 @@ class Trainer:
 
         pickle.dump(self.db, file)
 
-    def gen_file_tuples(self, file):
-        tuples = [ ]
-        for line in file.readlines():
-            tmp = line.strip().split()
-            tmp.reverse()
-            tuples.append(tuple(tmp))
+    def train(self, labels):
+        processor  = self.db.processor
+        normalized = [ ]
 
-        return tuples
-
-    def gen_token_tuples(self, files):
-        tuples = [ ]
-        for (cat, path) in files:
+        for (cat, path) in processor.gen_file_tuples(labels):
             if self.verbose:
                 print(f'Tokenizing file: {cat} {path}')
 
             f = open(path, 'r')
-            tokens = word_tokenize(f.read())
-            tuples.append((cat, tokens))
+            normalized.append((cat, processor.tokenize(f.read())))
             f.close()
 
-        return tuples
-
-    def train(self, cat_tokens):
-        for (cat, tokens) in cat_tokens:
+        for (cat, tokens) in normalized:
             try:
                 self.db.cat[cat].add_doc(tokens)
             except KeyError:
