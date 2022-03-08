@@ -36,6 +36,13 @@ class Processor:
 
         return tuples
 
+    def gen_file_list(self, file):
+        list = [ ]
+        for line in file.readlines():
+            list.append(line.strip())
+
+        return list
+
     def tokenize(self, string):
         return word_tokenize(string)
 
