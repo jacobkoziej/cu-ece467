@@ -66,9 +66,21 @@ class Vector:
             return str(vars(self))
 
     def __init__(self):
+        self.cache   = False
         self.doc_cnt = 0
         self.feat    = { }
         self.norm    = None
 
     def __str__(self):
         return str(vars(self))
+
+    def add_doc(self, tokens):
+        self.cache = False
+        self.doc_cnt += 1
+
+        for word in set(tokens):
+            try:
+                self.feat[word].df += 1
+            except KeyError:
+                self.feat[word] = Vector()
+                self.feat[word].df += 1
