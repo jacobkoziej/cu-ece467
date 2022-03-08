@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import math
+import pickle
 
 from nltk.tokenize import word_tokenize
 
@@ -32,6 +33,12 @@ class Trainer:
     def __init__(self, verbose=False):
         self.db      = Database()
         self.verbose = verbose
+
+    def dump(self, file):
+        if self.verbose:
+            print(f'Dumping database to file: {file.name}')
+
+        pickle.dump(self.db, file)
 
     def gen_file_tuples(self, file):
         tuples = [ ]
