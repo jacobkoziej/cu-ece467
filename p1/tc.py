@@ -91,6 +91,15 @@ class Vector:
     def __str__(self):
         return str(vars(self))
 
+    def _calc_dot_prod(self, inherit):
+        sum = 0.0
+        for word, feat in self.feat.items():
+            if word in inherit.feat:
+                sum += feat.tf * inherit.feat[word].tf \
+                    * (inherit.feat[word].idf ** 2)
+
+        return sum
+
     def _calc_norm(self, inherit=None):
         sum = 0.0
 
