@@ -174,7 +174,7 @@ class Vector:
         if not vec.cached:
             vec.cache()
 
-        dot_prod = Vector._calc_dot_prod(self, vec)
+        dot_prod = vec._calc_dot_prod(self)
         norm = self.norm * vec._calc_norm(self)
 
         return dot_prod / norm
