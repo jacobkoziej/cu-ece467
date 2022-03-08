@@ -62,7 +62,7 @@ def parser_gen():
         type=argparse.FileType('r'),
     )
     train_subparser.add_argument(
-        '-o',
+        '-d',
         help='output trained database',
         metavar='db',
         required=True,
