@@ -17,6 +17,7 @@
 import math
 import pickle
 
+from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 
@@ -27,8 +28,11 @@ class Database:
 
 
 class Processor:
-    def __init__(self, insensitive=False):
+    stopwords = stopwords.words('english')
+
+    def __init__(self, insensitive=False, stop_words=False):
         self.insensitive = insensitive
+        self.stop_words  = stop_words
 
     def gen_cat_file_tuples(self, file):
         tuples = [ ]
@@ -50,7 +54,17 @@ class Processor:
         if self.insensitive:
             string = string.lower()
 
-        return word_tokenize(string)
+        tokens = word_tokenize(string)
+
+        if self.stop_words:
+            filtered = [ ]
+            for word in tokens:
+                if word not in self.stopwords:
+                    filtered.append(word)
+
+            tokens = filtered
+
+        return tokens
 
     def write_cat_file_tuples(self, tuples, file):
         for (cat, path) in tuples:
@@ -112,12 +126,13 @@ class Tester:
 
 
 class Trainer:
-    def __init__(self, insensitive=True, verbose=False):
+    def __init__(self, insensitive=True, stop_words=True, verbose=False):
         self.db      = Database()
         self.verbose = verbose
 
         p = self.db.processor
         p.insensitive = insensitive
+        p.stop_words  = stop_words
 
     def dump(self, file):
         if self.verbose:
