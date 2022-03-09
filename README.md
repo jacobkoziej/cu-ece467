@@ -7,6 +7,11 @@ Sable for the Spring of 2022.  All distributed course material can be
 found on the [course page].
 
 
+## Projects
+
+* Text Categorization `p1/`
+
+
 ## Copyright & Licensing
 
 Copyright (C) 2022  Jacob Koziej [`<jacobkoziej@gmail.com>`]
