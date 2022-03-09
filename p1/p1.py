@@ -75,6 +75,15 @@ def parser_gen():
 def main():
     args = parser_gen().parse_args()
 
+    if args.mode == 'train':
+        trainer = tc.Trainer(verbose=True)
+        trainer.train(args.i)
+        trainer.dump(args.d)
+    elif args.mode == 'test':
+        tester = tc.Tester(verbose=True)
+        tester.load(args.d)
+        tester.test(args.i)
+        tester.write(args.o)
 
 if __name__ == '__main__':
     main()
