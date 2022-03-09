@@ -17,159 +17,243 @@
 import math
 import pickle
 
-import nltk.tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+
+
+class Database:
+    def __init__(self):
+        self.cat       = { }
+        self.processor = Processor()
+
+
+class Processor:
+    stopwords = stopwords.words('english')
+
+    def __init__(self, insensitive=False, stemming=False, stop_words=False):
+        self.insensitive = insensitive
+        self.stemming    = stemming
+        self.stop_words  = stop_words
+
+    def gen_cat_file_tuples(self, file):
+        tuples = [ ]
+        for line in file.readlines():
+            tmp = line.strip().split()
+            tmp.reverse()
+            tuples.append(tuple(tmp))
+
+        return tuples
+
+    def gen_file_list(self, file):
+        list = [ ]
+        for line in file.readlines():
+            list.append(line.strip())
+
+        return list
+
+    def tokenize(self, string):
+        if self.insensitive:
+            string = string.lower()
+
+        tokens = word_tokenize(string)
+
+        if self.stemming:
+            tmp = [ ]
+            for word in tokens:
+                ps = PorterStemmer()
+                tmp.append(ps.stem(word))
+
+            tokens = tmp
+
+        if self.stop_words:
+            filtered = [ ]
+            for word in tokens:
+                if word not in self.stopwords:
+                    filtered.append(word)
+
+            tokens = filtered
+
+        return tokens
+
+    def write_cat_file_tuples(self, tuples, file):
+        for (cat, path) in tuples:
+            file.write(f'{path} {cat}\n')
+
+
+class Tester:
+    def __init__(self, db=None, verbose=False):
+        self.db      = db
+        self.predict = [ ]
+        self.verbose = verbose
+
+    def load(self, file):
+        if self.verbose:
+            print(f'Importing database from file: {file.name}')
+
+        self.db = pickle.load(file)
+
+    def test(self, file):
+        processor = self.db.processor
+
+        token_tuples = [ ]
+        for path in processor.gen_file_list(file):
+            if self.verbose:
+                print(f'Tokenizing file: {path}')
+
+            f = open(path)
+            token_tuples.append((path, processor.tokenize(f.read())))
+            f.close()
+
+        vec_tuples = [ ]
+        for (path, tokens) in token_tuples:
+            if self.verbose:
+                print(f'Caching vector: {path}')
+
+                vec = Vector()
+                vec.add_doc(tokens)
+                vec.cache()
+                vec_tuples.append((path, vec))
+
+        categories = list(self.db.cat.keys())
+        cat_tuples = [ ]
+        for (path, vec) in vec_tuples:
+            similarities = [ ]
+            for cat in categories:
+                similarities.append(Vector.sim(self.db.cat[cat], vec))
+
+            cat = categories[similarities.index(max(similarities))]
+
+            if self.verbose:
+                print(f'Labeled file: {cat} {path}')
+
+            cat_tuples.append((cat, path))
+
+        self.predict = cat_tuples
+
+    def write(self, file):
+        self.db.processor.write_cat_file_tuples(self.predict, file)
+
+
+class Trainer:
+    def __init__(self, insensitive=True, stemming=True, stop_words=True, verbose=False):
+        self.db      = Database()
+        self.verbose = verbose
+
+        p = self.db.processor
+        p.insensitive = insensitive
+        p.stemming    = stemming
+        p.stop_words  = stop_words
+
+    def dump(self, file):
+        if self.verbose:
+            print(f'Dumping database to file: {file.name}')
+
+        pickle.dump(self.db, file)
+
+    def train(self, labels):
+        processor  = self.db.processor
+        normalized = [ ]
+
+        for (cat, path) in processor.gen_cat_file_tuples(labels):
+            if self.verbose:
+                print(f'Tokenizing file: {cat} {path}')
+
+            f = open(path, 'r')
+            normalized.append((cat, processor.tokenize(f.read())))
+            f.close()
+
+        for (cat, tokens) in normalized:
+            try:
+                self.db.cat[cat].add_doc(tokens)
+            except KeyError:
+                self.db.cat[cat] = Vector()
+                self.db.cat[cat].add_doc(tokens)
+
+        for cat, vec in self.db.cat.items():
+            if self.verbose:
+                print(f'Caching vector: {cat}')
+
+            vec.cache()
 
 
 class Vector:
     class WordWeight:
         def __init__(self):
-            self.tc    = 0     # term count
-            self.tf    = None  # term frequency log10(tc + 1)
+            self.tf    = 0     # term frequency
             self.df    = 0     # document frequency
-            self.idf   = None  # inverse document frequency log10(doc_cnt/df)
-            self.tfidf = None  # word weight tf * idf
+            self.idf   = None  # inverse document frequency
+            self.tfidf = None  # word weight
+
+        def __str__(self):
+            return str(vars(self))
 
     def __init__(self):
-        self.clear()
-
-    def _calc_word_weight(self):
-        if self.doc_cnt > 1:
-            for _, word in self.feat.items():
-                word.tf = math.log10(word.tc + 1)
-                word.idf = math.log10(self.doc_cnt / word.df)
-                word.tfidf = word.tf * word.idf
-        else:
-            for _, word in self.feat.items():
-                word.tf = math.log10(word.tc + 1)
-
-    def _doc_process(self, doc):
-        self.doc_cnt += 1
-
-        uniq_feat = set(doc)
-
-        for feat in uniq_feat:
-            try:
-                self.feat[feat].df += 1
-            except KeyError:
-                self.feat[feat] = self.WordWeight()
-                self.feat[feat].df += 1
-
-        for word in doc:
-            self.feat[word].tc += 1
-
-    def calc_norm(self, parent=None):
-        norm = 0
-
-        if parent is None:
-            for _, feat in self.feat.items():
-                norm += feat.tfidf ** 2
-        else:
-            for word in self.feat:
-                if word in parent.feat:
-                    norm += (self.feat[word].tf * parent.feat[word].idf) ** 2
-
-        return math.sqrt(norm)
-
-    def clear(self):
+        self.cached  = False
         self.doc_cnt = 0
         self.feat    = { }
         self.norm    = None
 
-    def dot_prod(self, vec):
-        dot_prod = 0
+    def __str__(self):
+        return str(vars(self))
 
-        for word in self.feat:
-            if word in vec.feat:
-                dot_prod += self.feat[word].tfidf \
-                    * ((vec.feat[word].tf * self.feat[word].idf) ** 2)
+    def _calc_dot_prod(self, inherit):
+        sum = 0.0
+        for word, feat in self.feat.items():
+            if word in inherit.feat:
+                sum += feat.tf * inherit.feat[word].tf \
+                    * (inherit.feat[word].idf ** 2)
 
-        return dot_prod
+        return sum
 
-    def process(self, raw):
-        if isinstance(raw[0], list):
-            for doc in raw:
-                self._doc_process(doc)
+    def _calc_norm(self, inherit=None):
+        sum = 0.0
 
-            self._calc_word_weight()
-            self.norm = self.calc_norm()
+        if inherit is None:
+            for _, feat in self.feat.items():
+                sum += feat.tfidf ** 2
 
+            self.norm = math.sqrt(sum)
+            return self.norm
         else:
-            self._doc_process(raw)
-            self._calc_word_weight()
+            for word, feat in self.feat.items():
+                if word in inherit.feat:
+                    sum += (feat.tf * inherit.feat[word].idf) ** 2
+
+            return math.sqrt(sum)
+
+    def _calc_word_weight(self):
+        for _, word in self.feat.items():
+            word.idf = math.log10(self.doc_cnt / word.df)
+            word.tfidf = word.tf * word.idf
+
+    def add_doc(self, tokens):
+        self.cached = False
+        self.doc_cnt += 1
+
+        for word in set(tokens):
+            try:
+                self.feat[word].df += 1
+            except KeyError:
+                self.feat[word] = self.WordWeight()
+                self.feat[word].df += 1
+
+        for word in tokens:
+            self.feat[word].tf += 1
+
+    def cache(self):
+        self._calc_word_weight()
+        self._calc_norm()
+        self.cached = True
 
     def sim(self, vec):
-        dot_prod = Vector.dot_prod(self, vec)
-        norm     = 0
+        if not self.cached:
+            self.cache()
 
-        for word in self.feat:
-            if word in vec.feat:
-                norm += (vec.feat[word].tf * self.feat[word].idf) ** 2
+        if not vec.cached:
+            vec.cache()
 
-        return dot_prod / (self.norm * math.sqrt(norm))
+        dot_prod = vec._calc_dot_prod(self)
+        norm = self.norm * vec._calc_norm(self)
 
-
-class Tester:
-    def __init__(self, db):
-        self.db = db
-
-    def _list_tokenize(self, list):
-        tokens = [ ]
-
-        for path in list:
-            file = open(path, 'r')
-            tokens.append((path, nltk.tokenize.word_tokenize(file.read())))
-            file.close()
-
-        return tokens
-
-    def test(self, list):
-        uncat_tokens = self._list_tokenize(list)
-        tuples       = [ ]
-
-        name = [ ]
-        cat  = [ ]
-        for k, v in self.db.items():
-            name.append(k)
-            cat.append(v)
-
-        for (path, token) in uncat_tokens:
-            tmp = Vector()
-            tmp.process(token)
-            out = [ ]
-
-            for vec in cat:
-                out.append(Vector.sim(vec, tmp))
-
-            tuples.append((path, name[out.index(max(out))]))
-
-        return tuples
-
-class Trainer:
-    def __init__(self, labels):
-        self.cat = { }
-
-    def _category_tokenize(self, labels):
-        cat_tokens = { }
-
-        for path, category in labels:
-            file   = open(path, 'r')
-            tokens = nltk.tokenize.word_tokenize(file.read())
-            file.close()
-
-            try:
-                cat_tokens[category].append(tokens)
-            except KeyError:
-                cat_tokens[category] = [tokens]
-
-        return cat_tokens
-
-    def export(self, db):
-        pickle.dump(self.cat, db)
-
-    def train(self, labels):
-        cat_tokens = self._category_tokenize(labels)
-
-        for category, tokens in cat_tokens.items():
-            vec = Vector()
-            vec.process(tokens)
-            self.cat[category] = vec
+        return dot_prod / norm

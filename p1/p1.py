@@ -62,7 +62,7 @@ def parser_gen():
         type=argparse.FileType('r'),
     )
     train_subparser.add_argument(
-        '-o',
+        '-d',
         help='output trained database',
         metavar='db',
         required=True,
@@ -72,32 +72,18 @@ def parser_gen():
     return parser
 
 
-def tuple_gen(input):
-    tuples = [ ]
-    for line in input.readlines():
-        tuples.append(tuple(line.strip().split()))
-
-    return tuples
-
-
-def list_gen(input):
-    list = [ ]
-    for line in input.readlines():
-        list.append(line.strip())
-
-    return list
-
-
 def main():
     args = parser_gen().parse_args()
 
-    tuples = None
-
     if args.mode == 'train':
-        trainer = tc.Trainer(tuples)
-        trainer.train(tuple_gen(args.i))
-        trainer.export(args.o)
-
+        trainer = tc.Trainer(verbose=True)
+        trainer.train(args.i)
+        trainer.dump(args.d)
+    elif args.mode == 'test':
+        tester = tc.Tester(verbose=True)
+        tester.load(args.d)
+        tester.test(args.i)
+        tester.write(args.o)
 
 if __name__ == '__main__':
     main()
