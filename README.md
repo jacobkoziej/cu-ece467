@@ -12,6 +12,34 @@ found on the [course page].
 * Text Categorization `p1/`
 
 
+## Runtime Dependencies
+
+The following was developed and tested with Python 3.10 running on
+Linux.
+
+Though not required, it is recommended to use a Python virtual
+environment to streamline the installation of project dependencies.
+
+```sh
+python3 -m venv cu-ece467
+. cu-ece467/bin/activate
+```
+
+All third-party libraries can be installed using `pip`.
+
+```sh
+python3 -m pip install -r requirements.txt
+```
+
+After third-party libraries have been installed, the necessary NLTK data
+must be downloaded.
+
+```sh
+python3 -m nltk.downloader punkt
+python3 -m nltk.downloader stopwords
+```
+
+
 ## Copyright & Licensing
 
 Copyright (C) 2022  Jacob Koziej [`<jacobkoziej@gmail.com>`]
