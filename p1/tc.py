@@ -22,10 +22,18 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 
+class Collection:
+    def __init__(self):
+        self.doc_cnt = 0
+        self.doc_frq = { }
+        self.idf     = { }
+
+
 class Database:
     def __init__(self):
-        self.cat       = { }
-        self.processor = Processor()
+        self.cat        = { }
+        self.collection = Collection()
+        self.processor  = Processor()
 
 
 class Processor:
