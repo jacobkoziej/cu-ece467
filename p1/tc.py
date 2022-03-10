@@ -105,6 +105,17 @@ class Processor:
 
         return list
 
+    def gen_vec(self, tokens):
+        vec = { }
+
+        for word in tokens:
+            try:
+                vec[word] += 1
+            except KeyError:
+                vec[word] = 1
+
+        return vec
+
     def tokenize(self, string):
         if self.insensitive:
             string = string.lower()
