@@ -75,6 +75,7 @@ class Collection:
 
 class Database:
     def __init__(self):
+        self.cat_norm   = { }
         self.cat_vec    = { }
         self.collection = Collection()
         self.processor  = Processor()
