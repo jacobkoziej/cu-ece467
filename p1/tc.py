@@ -24,26 +24,26 @@ from nltk.tokenize import word_tokenize
 
 class Collection:
     def __init__(self):
-        self.cached  = True
-        self.doc_cnt = 0
-        self.doc_frq = { }
-        self.idf     = { }
+        self._cached  = True
+        self._doc_cnt = 0
+        self._doc_frq = { }
+        self._idf     = { }
 
     def add_doc(self, tokens):
-        self.cached   = False
-        self.doc_cnt += 1
+        self._cached   = False
+        self._doc_cnt += 1
 
         for word in set(tokens):
             try:
-                self.doc_frq[word] += 1
+                self._doc_frq[word] += 1
             except KeyError:
-                self.doc_frq[word] = 1
+                self._doc_frq[word] = 1
 
     def cache(self):
-        for word, frq in self.doc_frq.items():
-            self.idf[word] = math.log10(self.doc_cnt / frq)
+        for word, frq in self._doc_frq.items():
+            self._idf[word] = math.log10(self._doc_cnt / frq)
 
-        self.cached = True
+        self._cached = True
 
 
 class Database:
