@@ -45,6 +45,18 @@ class Collection:
 
         self._cached = True
 
+    def dot(self, veca, vecb):
+        if not self._cached:
+            self.cache()
+
+        inner_prod = 0.0
+
+        for word in veca:
+            if word in vecb:
+                inner_prod += veca[word] * vecb[word] * (self._idf[word] ** 2)
+
+        return inner_prod
+
     def norm(self, vec):
         if not self._cached:
             self.cache()
