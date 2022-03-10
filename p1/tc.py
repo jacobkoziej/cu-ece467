@@ -24,11 +24,13 @@ from nltk.tokenize import word_tokenize
 
 class Collection:
     def __init__(self):
+        self.cached  = True
         self.doc_cnt = 0
         self.doc_frq = { }
         self.idf     = { }
 
     def add_doc(self, tokens):
+        self.cached   = False
         self.doc_cnt += 1
 
         for word in set(tokens):
