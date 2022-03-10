@@ -45,6 +45,18 @@ class Collection:
 
         self._cached = True
 
+    def norm(self, vec):
+        if not self._cached:
+            self.cache()
+
+        radicand = 0.0
+
+        for word, tf in vec.items():
+            if word in self._idf:
+                radicand += (tf * self._idf[word]) ** 2
+
+        return math.sqrt(radicand)
+
 
 class Database:
     def __init__(self):
