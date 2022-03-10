@@ -31,7 +31,7 @@ class Collection:
 
 class Database:
     def __init__(self):
-        self.cat        = { }
+        self.cat_vec    = { }
         self.collection = Collection()
         self.processor  = Processor()
 
@@ -123,12 +123,12 @@ class Tester:
                 vec.cache()
                 vec_tuples.append((path, vec))
 
-        categories = list(self.db.cat.keys())
+        categories = list(self.db.cat_vec.keys())
         cat_tuples = [ ]
         for (path, vec) in vec_tuples:
             similarities = [ ]
             for cat in categories:
-                similarities.append(Vector.sim(self.db.cat[cat], vec))
+                similarities.append(Vector.sim(self.db.cat_vec[cat], vec))
 
             cat = categories[similarities.index(max(similarities))]
 
@@ -173,12 +173,12 @@ class Trainer:
 
         for (cat, tokens) in normalized:
             try:
-                self.db.cat[cat].add_doc(tokens)
+                self.db.cat_vec[cat].add_doc(tokens)
             except KeyError:
-                self.db.cat[cat] = Vector()
-                self.db.cat[cat].add_doc(tokens)
+                self.db.cat_vec[cat] = Vector()
+                self.db.cat_vec[cat].add_doc(tokens)
 
-        for cat, vec in self.db.cat.items():
+        for cat, vec in self.db.cat_vec.items():
             if self.verbose:
                 print(f'Caching vector: {cat}')
 
