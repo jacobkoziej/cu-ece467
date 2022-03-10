@@ -28,6 +28,15 @@ class Collection:
         self.doc_frq = { }
         self.idf     = { }
 
+    def add_doc(self, tokens):
+        self.doc_cnt += 1
+
+        for word in set(tokens):
+            try:
+                self.doc_frq[word] += 1
+            except KeyError:
+                self.doc_frq[word] = 1
+
 
 class Database:
     def __init__(self):
