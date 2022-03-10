@@ -39,6 +39,12 @@ class Collection:
             except KeyError:
                 self.doc_frq[word] = 1
 
+    def cache(self):
+        for word, frq in self.doc_frq.items():
+            self.idf[word] = math.log10(self.doc_cnt / frq)
+
+        self.cached = True
+
 
 class Database:
     def __init__(self):
