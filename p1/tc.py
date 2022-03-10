@@ -69,6 +69,9 @@ class Collection:
 
         return math.sqrt(radicand)
 
+    def sim(self, dot_prod, norm):
+        return dot_prod / norm
+
 
 class Database:
     def __init__(self):
