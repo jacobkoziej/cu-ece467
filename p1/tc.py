@@ -22,10 +22,63 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 
+class Collection:
+    def __init__(self):
+        self._cached  = True
+        self._doc_cnt = 0
+        self._doc_frq = { }
+        self._idf     = { }
+
+    def add_doc(self, tokens):
+        self._cached   = False
+        self._doc_cnt += 1
+
+        for word in set(tokens):
+            try:
+                self._doc_frq[word] += 1
+            except KeyError:
+                self._doc_frq[word] = 1
+
+    def cache(self):
+        for word, frq in self._doc_frq.items():
+            self._idf[word] = math.log10(self._doc_cnt / frq)
+
+        self._cached = True
+
+    def dot(self, vecu, vecv):
+        if not self._cached:
+            self.cache()
+
+        inner_prod = 0.0
+
+        for word in vecu:
+            if word in vecv:
+                inner_prod += vecu[word] * vecv[word] * (self._idf[word] ** 2)
+
+        return inner_prod
+
+    def norm(self, vec):
+        if not self._cached:
+            self.cache()
+
+        radicand = 0.0
+
+        for word, tf in vec.items():
+            if word in self._idf:
+                radicand += (tf * self._idf[word]) ** 2
+
+        return math.sqrt(radicand)
+
+    def sim(self, dot_prod, norm):
+        return dot_prod / norm
+
+
 class Database:
     def __init__(self):
-        self.cat       = { }
-        self.processor = Processor()
+        self.cat_norm   = { }
+        self.cat_vec    = { }
+        self.collection = Collection()
+        self.processor  = Processor()
 
 
 class Processor:
@@ -52,7 +105,18 @@ class Processor:
 
         return list
 
-    def tokenize(self, string):
+    def gen_vec(self, tokens):
+        vec = { }
+
+        for word in tokens:
+            try:
+                vec[word] += 1
+            except KeyError:
+                vec[word] = 1
+
+        return vec
+
+    def normalize(self, string):
         if self.insensitive:
             string = string.lower()
 
@@ -94,42 +158,52 @@ class Tester:
         self.db = pickle.load(file)
 
     def test(self, file):
-        processor = self.db.processor
+        collection = self.db.collection
+        processor  = self.db.processor
 
-        token_tuples = [ ]
+        normalized = [ ]
         for path in processor.gen_file_list(file):
             if self.verbose:
-                print(f'Tokenizing file: {path}')
+                print(f"Normalizing: '{path}'")
 
-            f = open(path)
-            token_tuples.append((path, processor.tokenize(f.read())))
+            f = open(path, 'r')
+            tokens = processor.normalize(f.read())
             f.close()
 
-        vec_tuples = [ ]
-        for (path, tokens) in token_tuples:
+            normalized.append((path, tokens))
+
+        uncat_vec = { }
+        for (path, tokens) in normalized:
             if self.verbose:
-                print(f'Caching vector: {path}')
+                print(f"Generating vector: '{path}'")
 
-                vec = Vector()
-                vec.add_doc(tokens)
-                vec.cache()
-                vec_tuples.append((path, vec))
+            uncat_vec[path] = processor.gen_vec(tokens)
 
-        categories = list(self.db.cat.keys())
-        cat_tuples = [ ]
-        for (path, vec) in vec_tuples:
-            similarities = [ ]
+        uncat_norm = { }
+        for path, vec in uncat_vec.items():
+            if self.verbose:
+                print(f"Normalizing vector: '{path}'")
+
+            uncat_norm[path] = collection.norm(vec)
+
+        cat_norm   = self.db.cat_norm
+        cat_vec    = self.db.cat_vec
+        categories = list(self.db.cat_vec.keys())
+        predicted  = [ ]
+        for path in uncat_vec:
+            sim = { }
             for cat in categories:
-                similarities.append(Vector.sim(self.db.cat[cat], vec))
+                sim[cat] = collection.sim(
+                    collection.dot(cat_vec[cat], uncat_vec[path]),
+                    uncat_norm[path] * cat_norm[cat]
+                )
 
-            cat = categories[similarities.index(max(similarities))]
+                if self.verbose:
+                    print(f"Similarity: '{path}' '{cat}' ==> {sim[cat]:.16f}")
 
-            if self.verbose:
-                print(f'Labeled file: {cat} {path}')
+            predicted.append((max(sim, key=sim.get), path))
 
-            cat_tuples.append((cat, path))
-
-        self.predict = cat_tuples
+        self.predict = predicted
 
     def write(self, file):
         self.db.processor.write_cat_file_tuples(self.predict, file)
@@ -152,108 +226,47 @@ class Trainer:
         pickle.dump(self.db, file)
 
     def train(self, labels):
+        collection = self.db.collection
         processor  = self.db.processor
+
+        cat_tokens = { }
         normalized = [ ]
 
         for (cat, path) in processor.gen_cat_file_tuples(labels):
             if self.verbose:
-                print(f'Tokenizing file: {cat} {path}')
+                print(f"Normalizing: '{path}' '{cat}'")
 
             f = open(path, 'r')
-            normalized.append((cat, processor.tokenize(f.read())))
+            tokens = processor.normalize(f.read())
             f.close()
 
-        for (cat, tokens) in normalized:
             try:
-                self.db.cat[cat].add_doc(tokens)
+                cat_tokens[cat] += tokens
             except KeyError:
-                self.db.cat[cat] = Vector()
-                self.db.cat[cat].add_doc(tokens)
+                cat_tokens[cat]  = [ ]
+                cat_tokens[cat] += tokens
 
-        for cat, vec in self.db.cat.items():
+            normalized.append((cat, path, tokens))
+
+        for (cat, path, tokens) in normalized:
             if self.verbose:
-                print(f'Caching vector: {cat}')
+                print(f"Adding to collection: '{path}' '{cat}'")
 
-            vec.cache()
+            collection.add_doc(tokens)
 
+        if self.verbose:
+            print(f"Calculating collection idfs")
 
-class Vector:
-    class WordWeight:
-        def __init__(self):
-            self.tf    = 0     # term frequency
-            self.df    = 0     # document frequency
-            self.idf   = None  # inverse document frequency
-            self.tfidf = None  # word weight
+        collection.cache()
 
-        def __str__(self):
-            return str(vars(self))
+        for cat, tokens in cat_tokens.items():
+            if self.verbose:
+                print(f"Generating vector: '{cat}'")
 
-    def __init__(self):
-        self.cached  = False
-        self.doc_cnt = 0
-        self.feat    = { }
-        self.norm    = None
+            self.db.cat_vec[cat] = processor.gen_vec(tokens)
 
-    def __str__(self):
-        return str(vars(self))
+        for cat, vec in self.db.cat_vec.items():
+            if self.verbose:
+                print(f"Normalizing vector: '{cat}'")
 
-    def _calc_dot_prod(self, inherit):
-        sum = 0.0
-        for word, feat in self.feat.items():
-            if word in inherit.feat:
-                sum += feat.tf * inherit.feat[word].tf \
-                    * (inherit.feat[word].idf ** 2)
-
-        return sum
-
-    def _calc_norm(self, inherit=None):
-        sum = 0.0
-
-        if inherit is None:
-            for _, feat in self.feat.items():
-                sum += feat.tfidf ** 2
-
-            self.norm = math.sqrt(sum)
-            return self.norm
-        else:
-            for word, feat in self.feat.items():
-                if word in inherit.feat:
-                    sum += (feat.tf * inherit.feat[word].idf) ** 2
-
-            return math.sqrt(sum)
-
-    def _calc_word_weight(self):
-        for _, word in self.feat.items():
-            word.idf = math.log10(self.doc_cnt / word.df)
-            word.tfidf = word.tf * word.idf
-
-    def add_doc(self, tokens):
-        self.cached = False
-        self.doc_cnt += 1
-
-        for word in set(tokens):
-            try:
-                self.feat[word].df += 1
-            except KeyError:
-                self.feat[word] = self.WordWeight()
-                self.feat[word].df += 1
-
-        for word in tokens:
-            self.feat[word].tf += 1
-
-    def cache(self):
-        self._calc_word_weight()
-        self._calc_norm()
-        self.cached = True
-
-    def sim(self, vec):
-        if not self.cached:
-            self.cache()
-
-        if not vec.cached:
-            vec.cache()
-
-        dot_prod = vec._calc_dot_prod(self)
-        norm = self.norm * vec._calc_norm(self)
-
-        return dot_prod / norm
+            self.db.cat_norm[cat] = collection.norm(vec)
