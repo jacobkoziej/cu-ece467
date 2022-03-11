@@ -116,7 +116,7 @@ class Processor:
 
         return vec
 
-    def tokenize(self, string):
+    def normalize(self, string):
         if self.insensitive:
             string = string.lower()
 
@@ -167,7 +167,7 @@ class Tester:
                 print(f"Normalizing: '{path}'")
 
             f = open(path, 'r')
-            tokens = processor.tokenize(f.read())
+            tokens = processor.normalize(f.read())
             f.close()
 
             normalized.append((path, tokens))
@@ -237,7 +237,7 @@ class Trainer:
                 print(f"Normalizing: '{path}' '{cat}'")
 
             f = open(path, 'r')
-            tokens = processor.tokenize(f.read())
+            tokens = processor.normalize(f.read())
             f.close()
 
             try:
