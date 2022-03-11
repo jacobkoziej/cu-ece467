@@ -158,42 +158,52 @@ class Tester:
         self.db = pickle.load(file)
 
     def test(self, file):
-        processor = self.db.processor
+        collection = self.db.collection
+        processor  = self.db.processor
 
-        token_tuples = [ ]
+        normalized = [ ]
         for path in processor.gen_file_list(file):
             if self.verbose:
-                print(f'Tokenizing file: {path}')
+                print(f"Normalizing: '{path}'")
 
-            f = open(path)
-            token_tuples.append((path, processor.tokenize(f.read())))
+            f = open(path, 'r')
+            tokens = processor.tokenize(f.read())
             f.close()
 
-        vec_tuples = [ ]
-        for (path, tokens) in token_tuples:
+            normalized.append((path, tokens))
+
+        uncat_vec = { }
+        for (path, tokens) in normalized:
             if self.verbose:
-                print(f'Caching vector: {path}')
+                print(f"Generating vector: '{path}'")
 
-                vec = Vector()
-                vec.add_doc(tokens)
-                vec.cache()
-                vec_tuples.append((path, vec))
+            uncat_vec[path] = processor.gen_vec(tokens)
 
+        uncat_norm = { }
+        for path, vec in uncat_vec.items():
+            if self.verbose:
+                print(f"Normalizing vector: '{path}'")
+
+            uncat_norm[path] = collection.norm(vec)
+
+        cat_norm   = self.db.cat_norm
+        cat_vec    = self.db.cat_vec
         categories = list(self.db.cat_vec.keys())
-        cat_tuples = [ ]
-        for (path, vec) in vec_tuples:
-            similarities = [ ]
+        predicted  = [ ]
+        for path in uncat_vec:
+            sim = { }
             for cat in categories:
-                similarities.append(Vector.sim(self.db.cat_vec[cat], vec))
+                sim[cat] = collection.sim(
+                    collection.dot(cat_vec[cat], uncat_vec[path]),
+                    uncat_norm[path] * cat_norm[cat]
+                )
 
-            cat = categories[similarities.index(max(similarities))]
+                if self.verbose:
+                    print(f"Similarity: '{path}' '{cat}' ==> {sim[cat]:.16f}")
 
-            if self.verbose:
-                print(f'Labeled file: {cat} {path}')
+            predicted.append((max(sim, key=sim.get), path))
 
-            cat_tuples.append((cat, path))
-
-        self.predict = cat_tuples
+        self.predict = predicted
 
     def write(self, file):
         self.db.processor.write_cat_file_tuples(self.predict, file)
