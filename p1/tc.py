@@ -216,29 +216,50 @@ class Trainer:
         pickle.dump(self.db, file)
 
     def train(self, labels):
+        collection = self.db.collection
         processor  = self.db.processor
+
+        cat_tokens = { }
         normalized = [ ]
 
         for (cat, path) in processor.gen_cat_file_tuples(labels):
             if self.verbose:
-                print(f'Tokenizing file: {cat} {path}')
+                print(f"Normalizing: '{path}' '{cat}'")
 
             f = open(path, 'r')
-            normalized.append((cat, processor.tokenize(f.read())))
+            tokens = processor.tokenize(f.read())
             f.close()
 
-        for (cat, tokens) in normalized:
             try:
-                self.db.cat_vec[cat].add_doc(tokens)
+                cat_tokens[cat] += tokens
             except KeyError:
-                self.db.cat_vec[cat] = Vector()
-                self.db.cat_vec[cat].add_doc(tokens)
+                cat_tokens[cat]  = [ ]
+                cat_tokens[cat] += tokens
+
+            normalized.append((cat, path, tokens))
+
+        for (cat, path, tokens) in normalized:
+            if self.verbose:
+                print(f"Adding to collection: '{path}' '{cat}'")
+
+            collection.add_doc(tokens)
+
+        if self.verbose:
+            print(f"Calculating collection idfs")
+
+        collection.cache()
+
+        for cat, tokens in cat_tokens.items():
+            if self.verbose:
+                print(f"Generating vector: '{cat}'")
+
+            self.db.cat_vec[cat] = processor.gen_vec(tokens)
 
         for cat, vec in self.db.cat_vec.items():
             if self.verbose:
-                print(f'Caching vector: {cat}')
+                print(f"Normalizing vector: '{cat}'")
 
-            vec.cache()
+            self.db.cat_norm[cat] = collection.norm(vec)
 
 
 class Vector:
