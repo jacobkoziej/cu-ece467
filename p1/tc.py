@@ -213,6 +213,11 @@ class Tester:
         self.db.processor.write_cat_file_tuples(self.predict, file)
 
 
+class TestGenerator:
+    def __init__(self):
+        self.processor = Processor()
+
+
 class Trainer:
     def __init__(self, insensitive=True, stemming=True, stop_words=True, verbose=False):
         self.db      = Database()
