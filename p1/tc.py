@@ -217,6 +217,24 @@ class TestGenerator:
     def __init__(self):
         self.processor = Processor()
 
+    def gen(self, file, prefix):
+        processor = self.processor
+
+        input = processor.gen_cat_file_tuples(file)
+        train_cnt = (len(input) // 3) * 2
+
+        f = open(f'{prefix}_train.labels', 'w')
+        processor.write_cat_file_tuples(input[:train_cnt], f)
+        f.close()
+
+        f = open(f'{prefix}_test.labels', 'w')
+        processor.write_cat_file_tuples(input[train_cnt:], f)
+        f.close()
+
+        f = open(f'{prefix}_test.list', 'w')
+        processor.write_file_list(input[train_cnt:], f)
+        f.close()
+
 
 class Trainer:
     def __init__(self, insensitive=True, stemming=True, stop_words=True, verbose=False):
