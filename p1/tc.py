@@ -71,7 +71,10 @@ class Collection:
         return math.sqrt(radicand)
 
     def sim(self, dot_prod, norm):
-        return dot_prod / norm
+        try:
+            return dot_prod / norm
+        except ZeroDivisionError:
+            return math.nan
 
 
 class Database:
