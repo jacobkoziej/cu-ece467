@@ -16,6 +16,7 @@
 
 import math
 import pickle
+import random
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -222,6 +223,8 @@ class TestGenerator:
 
         input = processor.gen_cat_file_tuples(file)
         train_cnt = (len(input) // 3) * 2
+
+        random.shuffle(input)
 
         f = open(f'{prefix}_train.labels', 'w')
         processor.write_cat_file_tuples(input[:train_cnt], f)
