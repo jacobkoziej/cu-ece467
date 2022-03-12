@@ -100,7 +100,8 @@ def main():
         tester.test(args.i)
         tester.write(args.o)
     elif args.mode == 'testgen':
-        pass
+        testgenerator = tc.TestGenerator()
+        testgenerator.gen(args.i, args.o)
 
 
 if __name__ == '__main__':
