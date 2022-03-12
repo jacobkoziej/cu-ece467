@@ -25,7 +25,7 @@ def parser_gen():
     parser = argparse.ArgumentParser(description='text categorization')
     subparser = parser.add_subparsers(
         dest='mode',
-        help='{test,train} -h/--help',
+        help='{test,testgen,train} -h/--help',
         metavar='mode',
         required=True,
     )
@@ -51,6 +51,21 @@ def parser_gen():
         metavar='output',
         required=True,
         type=argparse.FileType('w'),
+    )
+
+    testgen_subparser = subparser.add_parser('testgen')
+    testgen_subparser.add_argument(
+        '-i',
+        help='labeled corpus documents',
+        metavar='input',
+        required=True,
+        type=argparse.FileType('r'),
+    )
+    testgen_subparser.add_argument(
+        '-o',
+        help='output prefix',
+        metavar='output',
+        required=True,
     )
 
     train_subparser = subparser.add_parser('train')
@@ -84,6 +99,9 @@ def main():
         tester.load(args.d)
         tester.test(args.i)
         tester.write(args.o)
+    elif args.mode == 'testgen':
+        pass
+
 
 if __name__ == '__main__':
     main()
