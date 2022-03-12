@@ -144,6 +144,10 @@ class Processor:
         for (cat, path) in tuples:
             file.write(f'{path} {cat}\n')
 
+    def write_file_list(self, tuples, file):
+        for (_, path) in tuples:
+            file.write(f'{path}\n')
+
 
 class Tester:
     def __init__(self, db=None, verbose=False):
@@ -207,6 +211,29 @@ class Tester:
 
     def write(self, file):
         self.db.processor.write_cat_file_tuples(self.predict, file)
+
+
+class TestGenerator:
+    def __init__(self):
+        self.processor = Processor()
+
+    def gen(self, file, prefix):
+        processor = self.processor
+
+        input = processor.gen_cat_file_tuples(file)
+        train_cnt = (len(input) // 3) * 2
+
+        f = open(f'{prefix}_train.labels', 'w')
+        processor.write_cat_file_tuples(input[:train_cnt], f)
+        f.close()
+
+        f = open(f'{prefix}_test.labels', 'w')
+        processor.write_cat_file_tuples(input[train_cnt:], f)
+        f.close()
+
+        f = open(f'{prefix}_test.list', 'w')
+        processor.write_file_list(input[train_cnt:], f)
+        f.close()
 
 
 class Trainer:
