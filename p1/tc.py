@@ -144,6 +144,10 @@ class Processor:
         for (cat, path) in tuples:
             file.write(f'{path} {cat}\n')
 
+    def write_file_list(self, tuples, file):
+        for (_, path) in tuples:
+            file.write(f'{path}\n')
+
 
 class Tester:
     def __init__(self, db=None, verbose=False):
