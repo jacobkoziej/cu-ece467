@@ -221,21 +221,21 @@ class TestGenerator:
     def gen(self, file, prefix):
         processor = self.processor
 
-        input = processor.gen_cat_file_tuples(file)
-        train_cnt = (len(input) // 3) * 2
+        tuples = processor.gen_cat_file_tuples(file)
+        tuple_cnt = (len(tuples) // 3) * 2
 
-        random.shuffle(input)
+        random.shuffle(tuples)
 
         f = open(f'{prefix}_train.labels', 'w')
-        processor.write_cat_file_tuples(input[:train_cnt], f)
+        processor.write_cat_file_tuples(tuples[:tuple_cnt], f)
         f.close()
 
         f = open(f'{prefix}_test.labels', 'w')
-        processor.write_cat_file_tuples(input[train_cnt:], f)
+        processor.write_cat_file_tuples(tuples[tuple_cnt:], f)
         f.close()
 
         f = open(f'{prefix}_test.list', 'w')
-        processor.write_file_list(input[train_cnt:], f)
+        processor.write_file_list(tuples[tuple_cnt:], f)
         f.close()
 
 
