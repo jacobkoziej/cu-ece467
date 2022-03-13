@@ -28,3 +28,6 @@ Test Generation:
 ```
 ./p1.py testgen -i labeled_corpus -o output_prefix
 ```
+
+Optionally, `-v` or `--verbose` can be passed in training or testing
+mode to enable output information.
