@@ -86,12 +86,11 @@ class Database:
 
 
 class Processor:
-    stopwords = stopwords.words('english')
-
     def __init__(self, insensitive=False, stemming=False, stop_words=False):
         self.insensitive = insensitive
         self.stemming    = stemming
         self.stop_words  = stop_words
+        self.stopwords   = stopwords.words('english')
 
     def gen_cat_file_tuples(self, file):
         tuples = [ ]
