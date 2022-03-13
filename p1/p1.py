@@ -21,7 +21,7 @@ import argparse
 import tc
 
 
-def parser_gen():
+def main():
     parser = argparse.ArgumentParser(description='text categorization')
     subparser = parser.add_subparsers(
         dest='mode',
@@ -84,11 +84,7 @@ def parser_gen():
         type=argparse.FileType('wb'),
     )
 
-    return parser
-
-
-def main():
-    args = parser_gen().parse_args()
+    args = parser.parse_args()
 
     if args.mode == 'train':
         trainer = tc.Trainer(verbose=True)
