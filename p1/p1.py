@@ -52,6 +52,12 @@ def main():
         required=True,
         type=argparse.FileType('w'),
     )
+    test_subparser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='enable verbose output',
+    )
 
     testgen_subparser = subparser.add_parser('testgen')
     testgen_subparser.add_argument(
@@ -83,15 +89,21 @@ def main():
         required=True,
         type=argparse.FileType('wb'),
     )
+    train_subparser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='enable verbose output',
+    )
 
     args = parser.parse_args()
 
     if args.mode == 'train':
-        trainer = tc.Trainer(verbose=True)
+        trainer = tc.Trainer(verbose=args.verbose)
         trainer.train(args.i)
         trainer.dump(args.d)
     elif args.mode == 'test':
-        tester = tc.Tester(verbose=True)
+        tester = tc.Tester(verbose=args.verbose)
         tester.load(args.d)
         tester.test(args.i)
         tester.write(args.o)
