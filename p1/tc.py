@@ -171,6 +171,15 @@ class Tester:
         collection = self.db.collection
         processor  = self.db.processor
 
+        if self.verbose:
+            print(
+                f'Testings with...\n'
+                f'Insensitive: {processor.insensitive}\n'
+                f'Stemming:    {processor.stemming}\n'
+                f'Stop Words:  {processor.stop_words}\n'
+                f'---'
+            )
+
         normalized = [ ]
         for path in processor.gen_file_list(file):
             if self.verbose:
@@ -266,6 +275,15 @@ class Trainer:
 
         cat_tokens = { }
         normalized = [ ]
+
+        if self.verbose:
+            print(
+                f'Training with...\n'
+                f'Insensitive: {processor.insensitive}\n'
+                f'Stemming:    {processor.stemming}\n'
+                f'Stop Words:  {processor.stop_words}\n'
+                f'---'
+            )
 
         for (cat, path) in processor.gen_cat_file_tuples(labels):
             if self.verbose:
