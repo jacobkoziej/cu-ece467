@@ -118,6 +118,9 @@ class Processor:
             except KeyError:
                 vec[word] = 1
 
+        for word in vec:
+            vec[word] = math.log10(vec[word] + 1)
+
         return vec
 
     def normalize(self, string):
