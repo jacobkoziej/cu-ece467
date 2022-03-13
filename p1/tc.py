@@ -87,10 +87,11 @@ class Database:
 
 class Processor:
     def __init__(self, insensitive=False, stemming=False, stop_words=False):
-        self.insensitive = insensitive
-        self.stemming    = stemming
-        self.stop_words  = stop_words
-        self.stopwords   = stopwords.words('english')
+        self.insensitive    = insensitive
+        self.porter_stemmer = PorterStemmer()
+        self.stemming       = stemming
+        self.stop_words     = stop_words
+        self.stopwords      = stopwords.words('english')
 
     def gen_cat_file_tuples(self, file):
         tuples = [ ]
@@ -131,8 +132,7 @@ class Processor:
         if self.stemming:
             tmp = [ ]
             for word in tokens:
-                ps = PorterStemmer()
-                tmp.append(ps.stem(word))
+                tmp.append(self.porter_stemmer.stem(word))
 
             tokens = tmp
 
