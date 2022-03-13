@@ -20,21 +20,21 @@ Linux.
 Though not required, it is recommended to use a Python virtual
 environment to streamline the installation of project dependencies.
 
-```sh
+```
 python3 -m venv cu-ece467
 . cu-ece467/bin/activate
 ```
 
 All third-party libraries can be installed using `pip`.
 
-```sh
+```
 python3 -m pip install -r requirements.txt
 ```
 
 After third-party libraries have been installed, the necessary NLTK data
 must be downloaded.
 
-```sh
+```
 python3 -m nltk.downloader punkt
 python3 -m nltk.downloader stopwords
 ```
