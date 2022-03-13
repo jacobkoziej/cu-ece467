@@ -22,3 +22,9 @@ Testing:
 ```
 ./p1.py test -d trained_database -i input_list -o output_labels
 ```
+
+Test Generation:
+
+```
+./p1.py testgen -i labeled_corpus -o output_prefix
+```
