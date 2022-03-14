@@ -33,6 +33,23 @@ Optionally, `-v` or `--verbose` can be passed in training or testing
 mode to enable output information.
 
 
+## File Format
+
+Labels:
+
+```
+path/to/document category
+```
+
+List:
+
+```
+path/to/document
+```
+
+> Note that file paths that contain whitespace are not supported.
+
+
 ## Text Categorization Approach
 
 This project implements the Rocchio/TF*IDF text categorization (TC)
