@@ -87,3 +87,29 @@ along the way to speed up similarity calculations.
 When predicting a document's category, the normalized dot product is
 taken between it and a category.  The result with the highest value is
 then deemed to be the predicted category.
+
+
+### Weighting Scheme
+
+As touched upon earlier in the document, two weighting metrics were
+utilized when calculating word weights.
+
+At first, TF was used as a raw value, but this turned out to be a bit of
+a drawback when using category vectors as certain features could occur a
+magnitude more times than other features.  The issue with this approach
+is that a feature that occurs a magnitude more often than another is not
+necessarily more important.  To get around this drawback, a logarithm
+was applied to the raw TF.  One issue with this approach is that a
+feature that has a raw TF of one will have a weighted TF of zero.  To
+prevent this, the raw TF was always incremented by one before taking the
+logarithm.
+
+Similar to the TF, the IDF frequency was also squashed using a logarithm
+to prevent large values, skewing results.  When calculating IDF, the
+document count of a collection is divided by the document frequency,
+which is then input into a logarithmic function.  In doing so, a term
+that occurs in every document will result in a weight of zero as it is
+not a defining trait.
+
+Finally, both the TF and IDF are multiplied together to arrive at a word
+weight for each feature of a document.
