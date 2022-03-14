@@ -113,3 +113,37 @@ not a defining trait.
 
 Finally, both the TF and IDF are multiplied together to arrive at a word
 weight for each feature of a document.
+
+
+### Optimizations
+
+Although the initial performance was decent, several optimizations were
+applied to increase the performance of the TC system during text
+normalization.
+
+Firstly, all input was made lowercase.  This made the TC system case
+insensitive, giving marginal improvements in performance as
+capitalization no longer affected features.
+
+Another small improvement came in the form of filtering stop words.
+Stop words are typically the most common words in a language and can be
+safely discarded (for the most part) before processing.  Though this did
+result in a marginal increase in performance, TF*IDF weighting already
+does a good job at taking care of common words by assigning them a low
+weight.
+
+Finally, a Porter stemmer was applied to all document tokens.  Stemming
+removes morphological and inflexional endings from words.  Since the
+current TC system is based on a bag-of-words approach, stemming allowed
+for words to be mapped to the same stem, generalizing the features of a
+document or category, improving accuracy far more than the previous two
+optimizations.
+
+Interestingly enough, these optimizations *decreased* performance in
+corpus two, which consisted of image captions tagged as either indoor or
+outdoor.  Since these optimizations were concerned with generalizing
+input features, a defining trait of an indoor or outdoor location that
+was identifiable through capitalization, common words, or the
+morphological or inflexional endings of a feature were removed.
+Ultimately the gains seen in both corpus one and three were greater than
+the loss seen in corpus two, and these optimizations were all kept.
