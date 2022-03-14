@@ -147,3 +147,17 @@ was identifiable through capitalization, common words, or the
 morphological or inflexional endings of a feature were removed.
 Ultimately the gains seen in both corpus one and three were greater than
 the loss seen in corpus two, and these optimizations were all kept.
+
+
+## Evaluating Performance
+
+The F1 score was utilized to evaluate the effectiveness of the TC
+system.  This metric combines both precision and recall into a single
+value.
+
+Although three corpora were provided by the instructor, only one corpus
+consisted of both a training and test set.  To get around this, a
+training and test set was generated from the provided training corpora.
+Documents were randomly shuffled and divided into a training and testing
+set in a ratio of 2:1, roughly the same ratio as that of the provided
+corpus, which had both a training and test set.
