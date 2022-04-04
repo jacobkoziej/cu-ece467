@@ -16,8 +16,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import argparse
+
+
 def main():
-    pass
+    argparser = argparse.ArgumentParser(description='parsing')
+
+    argparser.add_argument(
+        'grammar',
+        help='context free grammar in chomsky normal form',
+        metavar='grammar.cnf',
+    )
+    argparser.add_argument(
+        '-p',
+        '--parse-tree',
+        action='store_true',
+        help='enable textual parse trees',
+    )
+
+    args = argparser.parse_args()
 
 
 if __name__ == '__main__':
