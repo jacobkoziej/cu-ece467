@@ -40,3 +40,16 @@ class Grammar:
 class Interactive:
     def __init__(self, grammar: Grammar):
         self.grammar = grammar
+
+    def parse_grammar(self, file_path: str):
+        with open(file_path) as grammar:
+            for line in grammar.readlines():
+                tokens = line.split()
+
+                match len(tokens):
+                    case 4:
+                        self.grammar.add_rule(tokens[0], tokens[2], tokens[3])
+                    case 3:
+                        self.grammar.add_terminal(tokens[0], tokens[2])
+                    case _:
+                        pass
