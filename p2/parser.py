@@ -35,3 +35,8 @@ class Grammar:
             self.terminals[rule].append(term)
         except KeyError:
             self.terminals[rule] = [term]
+
+
+class Interactive:
+    def __init__(self, grammar: Grammar):
+        self.grammar = grammar
