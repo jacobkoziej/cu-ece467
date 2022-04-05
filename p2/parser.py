@@ -29,3 +29,9 @@ class Grammar:
             self.rules[rule].append(nterm)
         except KeyError:
             self.rules[rule] = [nterm]
+
+    def add_terminal(self, rule: str, term: str):
+        try:
+            self.terminals[rule].append(term)
+        except KeyError:
+            self.terminals[rule] = [term]
