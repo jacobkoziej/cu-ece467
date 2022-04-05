@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from dataclasses import dataclass, field
+
+
+@dataclass
 class Grammar:
-    def __init__(self):
-        self.rules     = { }
-        self.terminals = { }
+    rules:     dict[str, list[(str, str)]] = field(default_factory=dict, kw_only=True)
+    terminals: dict[str, list[str]]        = field(default_factory=dict, kw_only=True)
