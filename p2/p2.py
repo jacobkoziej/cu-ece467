@@ -38,6 +38,10 @@ def main():
 
     args = argparser.parse_args()
 
+    interactive = parser.Interactive()
+
+    interactive.parse_grammar(args.grammar)
+
 
 if __name__ == '__main__':
     main()
