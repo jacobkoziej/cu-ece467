@@ -21,3 +21,11 @@ from dataclasses import dataclass, field
 class Grammar:
     rules:     dict[str, list[(str, str)]] = field(default_factory=dict, kw_only=True)
     terminals: dict[str, list[str]]        = field(default_factory=dict, kw_only=True)
+
+    def add_rule(self, rule: str, nterma: str, ntermb: str):
+        nterm = (nterma, ntermb)
+
+        try:
+            self.rules[rule].append(nterm)
+        except KeyError:
+            self.rules[rule] = [nterm]
