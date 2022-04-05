@@ -37,9 +37,9 @@ class Grammar:
             self.terminals[rule] = [term]
 
 
+@dataclass
 class Interactive:
-    def __init__(self, grammar: Grammar):
-        self.grammar = grammar
+    grammar: Grammar = field(default_factory=Grammar, kw_only=True)
 
     def parse_grammar(self, file_path: str):
         with open(file_path) as grammar:
