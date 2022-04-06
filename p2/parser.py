@@ -19,8 +19,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Grammar:
-    rules:     dict[str, list[(str, str)]] = field(default_factory=dict, kw_only=True)
-    terminals: dict[str, list[str]]        = field(default_factory=dict, kw_only=True)
+    rules:      dict[str, list[(str, str)]] = field(default_factory=dict, kw_only=True)
+    terminals:  dict[str, list[str]]        = field(default_factory=dict, kw_only=True)
+    start_symb: str                         = field(default='S',          kw_only=True)
 
     def add_rule(self, rule: str, nterma: str, ntermb: str):
         nterm = (nterma, ntermb)
@@ -35,6 +36,59 @@ class Grammar:
             self.terminals[rule].append(term)
         except KeyError:
             self.terminals[rule] = [term]
+
+    def parse(self, input: list[str]) -> list[tuple] | None:
+        if not input:
+            return None
+
+        # gen triangular matrix
+        matrix = [ ]
+        for i in range(len(input)):
+            matrix.append([ ])
+            for j in range(i + 1):
+                matrix[i].append([ ])
+
+        # tag terminal cells
+        for i in range(len(input)):
+            for rule, terminals in self.terminals.items():
+                for lex in terminals:
+                    if lex == input[i]:
+                        matrix[i][i].append((rule, lex))
+                        break
+
+            # lexicon is not in our grammar
+            if not matrix[i][i]:
+                return None
+
+        # parse upper triangular cells
+        for i in range(1, len(input)):
+            for j in reversed(range(i)):
+                for k in range(j, i):
+                    for l in range(j + 1, i + 1):
+                        # possible rules for cell i,j
+                        rules_l = matrix[k][j]
+                        rules_r = matrix[i][l]
+
+                        # skip empty cells
+                        if not rules_l or not rules_r:
+                            continue
+
+                        for rule_tup_l in rules_l:
+                            for rule_tup_r in rules_r:
+                                # possible rule from cells k,j and i,l
+                                rule = (rule_tup_l[0], rule_tup_r[0])
+
+                                for name, rules in self.rules.items():
+                                    if rule in rules:
+                                        matrix[i][j].append((name, (rule_tup_l, rule_tup_r)))
+
+        # collect valid parses
+        parses = [ ]
+        for parse in matrix[len(input) - 1][0]:
+            if self.start_symb == parse[0]:
+                parses.append(parse)
+
+        return parses if parses else None
 
 
 @dataclass
