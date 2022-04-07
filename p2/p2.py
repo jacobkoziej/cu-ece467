@@ -42,6 +42,8 @@ def main():
 
     cli.parse_grammar(args.grammar)
 
+    cli.cli(args.parse_tree)
+
 
 if __name__ == '__main__':
     main()
