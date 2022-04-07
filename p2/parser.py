@@ -95,6 +95,62 @@ class Grammar:
 class Cli:
     grammar:    Grammar = field(default_factory=Grammar, kw_only=True)
     indent_str: str     = field(default='    ',          kw_only=True)
+    prompt:     str     = field(default='(p2)',          kw_only=True)
+
+    def cli(self, parse_tree=False):
+        parse_str = self.parse_tree_str if parse_tree else self.parse_str
+
+        print(
+            'p2.py -- programming assignement #2 (parsing)\n'
+            "for help, type 'help'\n"
+            "to quit, type 'quit'\n"
+            "to parse a sentence, type 'parse'"
+        )
+
+        while True:
+            try:
+                opt = input(self.prompt + ': ')
+            except EOFError:
+                print()  # newline
+                break
+
+            match opt:
+                case 'help':
+                    print(
+                        "type 'help' for this message\n"
+                        "type 'quit' to exit the program'\n"
+                        "type 'parse' to input a sentence to parse"
+                    )
+
+                case 'parse':
+                    try:
+                        sentence = input(self.prompt + ' [sentence]: ')
+                    except EOFError:
+                        print()  # newline
+                        continue
+
+                    parses = self.grammar.parse(sentence.split())
+
+                    if not parses:
+                        print('NO VLAID PARSES')
+                        continue
+
+                    parse_cnt = 0
+                    print('VALID SENTENCE')
+                    for parse in parses:
+                        parse_cnt += 1
+                        print(f'parse: {parse_cnt}')
+                        print(parse_str(parse))
+
+                    print(f'number of valid parses: {len(parses)}')
+
+                case 'quit' | 'q':
+                    break
+
+                case _:
+                    print(f"error: unknown command '{opt}'")
+
+        print('goodbye!')
 
     def parse_grammar(self, file_path: str):
         with open(file_path) as grammar:
