@@ -92,7 +92,7 @@ class Grammar:
 
 
 @dataclass
-class Interactive:
+class Cli:
     grammar:    Grammar = field(default_factory=Grammar, kw_only=True)
     indent_str: str     = field(default='    ',          kw_only=True)
 

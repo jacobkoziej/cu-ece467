@@ -38,9 +38,9 @@ def main():
 
     args = argparser.parse_args()
 
-    interactive = parser.Interactive()
+    cli = parser.Cli()
 
-    interactive.parse_grammar(args.grammar)
+    cli.parse_grammar(args.grammar)
 
 
 if __name__ == '__main__':
