@@ -110,7 +110,7 @@ class Interactive:
                         pass
 
     def parse_str(self, rule: tuple) -> str:
-        if type(rule[0]) is str and type(rule[1]) is str:
+        if type(rule[1]) is str:
             return '[' + rule[0] + ' ' + rule[1] + ']'
 
         out  = '[' + rule[0]
@@ -125,7 +125,7 @@ class Interactive:
     def parse_tree_str(self, rule: tuple, indent: int = 0) -> str:
         indent_str = self.indent_str * indent
 
-        if type(rule[0]) is str and type(rule[1]) is str:
+        if type(rule[1]) is str:
             return indent_str + '[' + rule[0] + ' ' + rule[1] + ']'
 
         out  = indent_str + '[' + rule[0]
