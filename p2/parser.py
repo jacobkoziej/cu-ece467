@@ -37,9 +37,9 @@ class Grammar:
         except KeyError:
             self.terminals[rule] = [term]
 
-    def parse(self, input: list[str]) -> list[tuple] | None:
+    def parse(self, input: list[str]) -> list[tuple]:
         if not input:
-            return None
+            return [ ]
 
         # gen triangular matrix
         matrix = [ ]
@@ -58,16 +58,16 @@ class Grammar:
 
             # lexicon is not in our grammar
             if not matrix[i][i]:
-                return None
+                return [ ]
 
         # parse upper triangular cells
         for i in range(1, len(input)):
             for j in reversed(range(i)):
-                for k in range(j, i):
-                    for l in range(j + 1, i + 1):
+                for k in reversed(range(j + 1, i + 1)):
+                    for l in range(k - 1, i):
                         # possible rules for cell i,j
-                        rules_l = matrix[k][j]
-                        rules_r = matrix[i][l]
+                        rules_l = matrix[l][j]
+                        rules_r = matrix[i][k]
 
                         # skip empty cells
                         if not rules_l or not rules_r:
@@ -75,7 +75,7 @@ class Grammar:
 
                         for rule_tup_l in rules_l:
                             for rule_tup_r in rules_r:
-                                # possible rule from cells k,j and i,l
+                                # possible rule from cells l,j and i,k
                                 rule = (rule_tup_l[0], rule_tup_r[0])
 
                                 for name, rules in self.rules.items():
@@ -88,7 +88,7 @@ class Grammar:
             if self.start_symb == parse[0]:
                 parses.append(parse)
 
-        return parses if parses else None
+        return parses
 
 
 @dataclass
