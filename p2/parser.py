@@ -109,6 +109,19 @@ class Interactive:
                     case _:
                         pass
 
+    def parse_str(self, rule: tuple) -> str:
+        if type(rule[0]) is str and type(rule[1]) is str:
+            return '[' + rule[0] + ' ' + rule[1] + ']'
+
+        out  = '[' + rule[0]
+        out += ' '
+        out += self.parse_str(rule[1][0])
+        out += ' '
+        out += self.parse_str(rule[1][1])
+        out += ']'
+
+        return out
+
     def parse_tree_str(self, rule: tuple, indent: int = 0) -> str:
         indent_str = self.indent_str * indent
 
