@@ -93,7 +93,8 @@ class Grammar:
 
 @dataclass
 class Interactive:
-    grammar: Grammar = field(default_factory=Grammar, kw_only=True)
+    grammar:    Grammar = field(default_factory=Grammar, kw_only=True)
+    indent_str: str     = field(default='    ',          kw_only=True)
 
     def parse_grammar(self, file_path: str):
         with open(file_path) as grammar:
@@ -107,3 +108,19 @@ class Interactive:
                         self.grammar.add_terminal(tokens[0], tokens[2])
                     case _:
                         pass
+
+    def parse_tree_str(self, rule: tuple, indent: int = 0) -> str:
+        indent_str = self.indent_str * indent
+
+        if type(rule[0]) is str and type(rule[1]) is str:
+            return indent_str + '[' + rule[0] + ' ' + rule[1] + ']'
+
+        out  = indent_str + '[' + rule[0]
+        out += '\n'
+        out += self.parse_tree_str(rule[1][0], indent + 1)
+        out += '\n'
+        out += self.parse_tree_str(rule[1][1], indent + 1)
+        out += '\n'
+        out += indent_str + ']'
+
+        return out
