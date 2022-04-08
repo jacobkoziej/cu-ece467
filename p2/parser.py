@@ -90,9 +90,9 @@ class Cli:
 
         print(
             'p2.py -- programming assignement #2 (parsing)\n'
-            "for help, type 'help'\n"
-            "to quit, type 'quit'\n"
-            "to parse a sentence, type 'parse'"
+            "for help, type '(h)elp'\n"
+            "to quit, type '(q)uit'\n"
+            "to parse a sentence, type '(p)arse'"
         )
 
         while True:
@@ -103,14 +103,14 @@ class Cli:
                 break
 
             match opt:
-                case 'help':
+                case 'help' | 'h':
                     print(
-                        "type 'help' for this message\n"
-                        "type 'quit' to exit the program\n"
-                        "type 'parse' to input a sentence to parse"
+                        "type '(h)elp' for this message\n"
+                        "type '(q)uit' to exit the program\n"
+                        "type '(p)arse' to parse a sentence"
                     )
 
-                case 'parse':
+                case 'parse' | 'p':
                     try:
                         sentence = input(self.prompt + ' [sentence]: ')
                     except EOFError:
