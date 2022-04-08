@@ -30,6 +30,9 @@ While the application is running, you are dropped into a CLI.  You can
 print usage information by typing `help` or `h`, quit by typing `quit`
 or `q`, or parse a sentence by typing `parse` or `p`.
 
+Input sentences are to be fully lowercase and without any punctuation
+using a single space character as a delimiter between every word.
+
 
 ## Grammar Format
 
