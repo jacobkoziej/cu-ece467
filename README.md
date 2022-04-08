@@ -10,6 +10,7 @@ found on the [course page].
 ## Projects
 
 * Text Categorization `p1/`
+* Parsing `p2/`
 
 
 ## Runtime Dependencies
