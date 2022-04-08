@@ -106,7 +106,7 @@ class Cli:
                 case 'help':
                     print(
                         "type 'help' for this message\n"
-                        "type 'quit' to exit the program'\n"
+                        "type 'quit' to exit the program\n"
                         "type 'parse' to input a sentence to parse"
                     )
 
