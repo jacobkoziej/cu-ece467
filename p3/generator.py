@@ -29,3 +29,9 @@ class Preprocess:
 
     def gen_vocab(self, input: str) -> list[str]:
         return sorted(set(input))
+
+    def gen_input_target_seq(self, input: list) -> tuple[list[str], list[str]]:
+        input_seq  = input[:-1]
+        target_seq = input[1:]
+
+        return input_seq, target_seq
