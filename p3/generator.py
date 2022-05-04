@@ -14,6 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import tensorflow as tf
+
+
 class Preprocess:
+    def gen_vec(self, input: list[str]) -> tf.RaggedTensor:
+        return tf.strings.unicode_split(input, input_encoding='UTF-8')
+
     def gen_vocab(self, input: str) -> list[str]:
         return sorted(set(input))
