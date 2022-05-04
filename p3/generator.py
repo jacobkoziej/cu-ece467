@@ -18,6 +18,9 @@ import tensorflow as tf
 
 
 class Preprocess:
+    def gen_char2id(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
+        return tf.keras.layers.StringLookup(vocabulary=vocab)
+
     def gen_vec(self, input: list[str]) -> tf.RaggedTensor:
         return tf.strings.unicode_split(input, input_encoding='UTF-8')
 
