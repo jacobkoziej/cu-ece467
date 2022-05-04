@@ -15,4 +15,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 class Preprocess:
-    pass
+    def gen_vocab(self, input: str) -> list[str]:
+        return sorted(set(input))
