@@ -18,13 +18,35 @@
 
 import argparse
 
+import discord
+
 
 def main():
     argparser = argparse.ArgumentParser(
         description='recurrent neural networks (text generation)',
     )
+    subargparser = argparser.add_subparsers(
+        dest='mode',
+        help='train -h/--help',
+        metavar='mode',
+        required=True,
+    )
+
+    train_subargparser = subargparser.add_parser('train')
+    train_subargparser.add_argument(
+        'files',
+        help='discord chat dump',
+        metavar='dump.json',
+        nargs='+',
+    )
 
     args = argparser.parse_args()
+
+    match args.mode:
+        case 'train':
+            text = [ ]
+            for dump in args.files:
+                text += discord.decode(dump)
 
 
 if __name__ == '__main__':
