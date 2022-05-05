@@ -17,8 +17,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import math
 
 import discord
+import generator
 
 
 def main():
@@ -42,11 +44,19 @@ def main():
 
     args = argparser.parse_args()
 
+    preproc = generator.Preprocess()
+
     match args.mode:
         case 'train':
             text = [ ]
             for dump in args.files:
                 text += discord.decode(dump)
+
+            vocab         = preproc.gen_vocab(''.join(text))
+            embbeding_dim = 2 ** math.floor(math.log2(len(vocab) * 4))
+            rnn_units     = embbeding_dim * 4
+
+            model = generator.Model(len(vocab), embbeding_dim, rnn_units)
 
 
 if __name__ == '__main__':
