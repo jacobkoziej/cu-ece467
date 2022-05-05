@@ -17,6 +17,19 @@
 import tensorflow as tf
 
 
+class Model(tf.keras.Model):
+    def __init__(self, vocab_size, embedding_dim, rnn_units):
+        super().__init__(self)
+
+        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
+        self.gru = tf.keras.layers.GRU(
+            rnn_units,
+            return_sequences=True,
+            return_state=True,
+        )
+        self.dense = tf.keras.layers.Dense(vocab_size)
+
+
 class Preprocess:
     def gen_char2id(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
         return tf.keras.layers.StringLookup(vocabulary=vocab)
