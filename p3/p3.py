@@ -47,10 +47,13 @@ def main():
 
     match args.mode:
         case 'train':
+            print('Decoding discord chat dumps...', end='')
             text = [ ]
             for dump in args.files:
                 text += discord.decode(dump)
+            print('DONE')
 
+            print('Generating training targets...', end='')
             chars = tf.strings.unicode_split(
                 '\n'.join(text),
                 input_encoding='UTF-8'
@@ -68,6 +71,7 @@ def main():
 
             ids         = char2id(chars)
             ids_dataset = tf.data.Dataset.from_tensor_slices(ids)
+            print('DONE')
 
 
 if __name__ == '__main__':
