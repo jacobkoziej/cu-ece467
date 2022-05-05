@@ -45,21 +45,8 @@ class Model(tf.keras.Model):
             return x
 
 
-class Preprocess:
-    def gen_char2id(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
-        return tf.keras.layers.StringLookup(vocabulary=vocab)
 
-    def gen_id2char(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
-        return tf.keras.layers.StringLookup(invert=True, vocabulary=vocab)
 
-    def gen_vec(self, input: list[str]) -> tf.RaggedTensor:
-        return tf.strings.unicode_split(input, input_encoding='UTF-8')
 
-    def gen_vocab(self, input: str) -> list[str]:
-        return sorted(set(input))
 
-    def gen_input_target_seq(self, input: list) -> tuple[list[str], list[str]]:
-        input_seq  = input[:-1]
-        target_seq = input[1:]
 
-        return input_seq, target_seq
