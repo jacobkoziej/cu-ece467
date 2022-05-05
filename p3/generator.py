@@ -62,3 +62,25 @@ class Step(tf.keras.Model):
             dense_shape=[len(self.char2id.get_vocabulary())]
         )
         self.prediction_mask = tf.sparse.to_dense(sparse_mask)
+
+    @tf.function
+    def gen_one_step(self, inputs, states=None):
+        ids = self.char2id(tf.strings.unicode_split(inputs, 'UTF-8')).to_tensor()
+
+        predicted_logits, states = self.model(
+            inputs=ids,
+            states=states,
+            return_state=True,
+        )
+
+        # only use the last prediction and prevent '[UNK]'
+        predicted_logits = predicted_logits[:, -1, :]
+        predicted_logits = predicted_logits / self.temperature
+        predicted_logits = predicted_logits + self.prediction_mask
+
+        predicted_ids = tf.random.categorical(predicted_logits, num_samples=1)
+        predicted_ids = tf.random.squeeze(predicted_logits, axis=-1)
+
+        predicted_chars = self.id2char(predicted_ids)
+
+        return predicted_chars, states
