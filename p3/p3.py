@@ -81,8 +81,10 @@ def main():
             print('DONE')
 
             print('Generating training targets...', end='')
+            text = '\n'.join(text)
+
             chars = tf.strings.unicode_split(
-                '\n'.join(text),
+                text,
                 input_encoding='UTF-8'
             )
 
@@ -98,6 +100,28 @@ def main():
 
             ids         = char2id(chars)
             ids_dataset = tf.data.Dataset.from_tensor_slices(ids)
+
+            args.seq_len = abs(args.seq_len)
+            sequences = ids_dataset.batch(
+                args.seq_len + 1,
+                drop_remainder=True,
+            )
+            print('DONE')
+
+            print('Generating training batches...', end='')
+            args.batch_size = abs(args.batch_size)
+            args.buf_size   = abs(args.buf_size)
+
+            def split_input_target(sequence):
+                return sequence[:-1], sequence[1:]
+
+            dataset = sequences.map(split_input_target)
+            dataset = (
+                dataset
+                .shuffle(args.buf_size)
+                .batch(args.batch_size)
+                .prefetch(tf.data.experimental.AUTOTUNE)
+            )
             print('DONE')
 
 
