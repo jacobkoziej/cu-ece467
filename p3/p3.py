@@ -78,6 +78,15 @@ def main():
         metavar='N',
         type=int,
     )
+    train_subargparser.add_argument(
+        '-r',
+        '--rnn-units',
+        default=128,
+        dest='rnn_units',
+        help='number of model RNN units',
+        metavar='N',
+        type=int,
+    )
 
     args = argparser.parse_args()
 
