@@ -52,6 +52,15 @@ def main():
         type=int,
     )
     train_subargparser.add_argument(
+        '-e',
+        '--embed-dim',
+        default=256,
+        dest='embed_dim',
+        help='model embedding dimension',
+        metavar='N',
+        type=int,
+    )
+    train_subargparser.add_argument(
         '-u',
         '--buf-size',
         default=2 ** 14,
