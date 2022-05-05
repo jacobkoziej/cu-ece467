@@ -18,6 +18,8 @@
 
 import argparse
 
+import tensorflow as tf
+
 import discord
 import generator
 
@@ -48,6 +50,24 @@ def main():
             text = [ ]
             for dump in args.files:
                 text += discord.decode(dump)
+
+            chars = tf.strings.unicode_split(
+                '\n'.join(text),
+                input_encoding='UTF-8'
+            )
+
+            char2id = tf.keras.layers.StringLookup(
+                vocabulary=sorted(set(''.join(text))),
+                mask_token=None,
+            )
+            id2char = tf.keras.layers.StringLookup(
+                vocabulary=char2id.get_vocabulary(),
+                invert=True,
+                mask_token=None,
+            )
+
+            ids         = char2id(chars)
+            ids_dataset = tf.data.Dataset.from_tensor_slices(ids)
 
 
 if __name__ == '__main__':
