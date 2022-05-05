@@ -18,6 +18,8 @@
 
 import argparse
 
+import discord
+
 
 def main():
     argparser = argparse.ArgumentParser(
@@ -39,6 +41,12 @@ def main():
     )
 
     args = argparser.parse_args()
+
+    match args.mode:
+        case 'train':
+            text = [ ]
+            for dump in args.files:
+                text += discord.decode(dump)
 
 
 if __name__ == '__main__':
