@@ -36,7 +36,7 @@ class Model(tf.keras.Model):
         if states is None:
             states = self.gru.get_initial_state(x)
 
-        x, states = self.gru(x, inital_state=states, training=training)
+        x, states = self.gru(x, initial_state=states, training=training)
         x         = self.dense(x, training=training)
 
         if return_state:
