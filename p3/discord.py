@@ -13,3 +13,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import json
+
+
+def decode(file: str) -> list[str]:
+    decoded = None
+
+    with open(file) as fp:
+        raw = fp.read()
+        decoded = json.loads(raw)
+
+    out = [ ]
+    for message in decoded['messages']:
+        out.append(message['content'])
+
+    return out
