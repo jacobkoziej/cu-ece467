@@ -45,8 +45,20 @@ class Model(tf.keras.Model):
             return x
 
 
+class Step(tf.keras.Model):
+    def __init__(self, model, char2id, id2char, temperature=1.0):
+        super().__init__()
 
+        self.model       = model
+        self.char2id     = char2id
+        self.id2char     = id2char
+        self.temperature = temperature
 
-
-
-
+        # add a mask to prevent '[UNK]' from generating
+        skip_ids = self.ids_from_chars(['[UNK]'])[:, None]
+        sparse_mask = tf.SparseTensor(
+            values=[-float('inf')] * len(skip_ids),
+            indices=skip_ids,
+            dense_shape=[len(self.char2id.get_vocabulary())]
+        )
+        self.prediction_mask = tf.sparse.to_dense(sparse_mask)
