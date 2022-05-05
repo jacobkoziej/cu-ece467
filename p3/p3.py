@@ -43,6 +43,15 @@ def main():
         nargs='+',
     )
     train_subargparser.add_argument(
+        '-b',
+        '--batch-size',
+        default=64,
+        dest='batch_size',
+        help='training batch size',
+        metavar='N',
+        type=int,
+    )
+    train_subargparser.add_argument(
         '-s',
         '--seq-len',
         default=128,
