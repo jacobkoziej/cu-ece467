@@ -42,6 +42,15 @@ def main():
         metavar='dump.json',
         nargs='+',
     )
+    train_subargparser.add_argument(
+        '-s',
+        '--seq-len',
+        default=128,
+        dest='seq_len',
+        help='training sequence length',
+        metavar='N',
+        type=int,
+    )
 
     args = argparser.parse_args()
 
