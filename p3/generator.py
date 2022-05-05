@@ -29,6 +29,21 @@ class Model(tf.keras.Model):
         )
         self.dense = tf.keras.layers.Dense(vocab_size)
 
+    def call(self, inputs, states=None, return_state=False, training=False):
+        x = inputs
+        x = self.embedding(x, training=training)
+
+        if states is None:
+            states = self.gru.get_initial_state(x)
+
+        x, states = self.gru(x, inital_state=states, training=training)
+        x         = self.dense(x, training=training)
+
+        if return_state:
+            return x, states
+        else:
+            return x
+
 
 class Preprocess:
     def gen_char2id(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
