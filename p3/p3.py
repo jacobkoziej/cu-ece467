@@ -52,6 +52,15 @@ def main():
         type=int,
     )
     train_subargparser.add_argument(
+        '-u',
+        '--buf-size',
+        default=2 ** 14,
+        dest='buf_size',
+        help='training buffer size',
+        metavar='N',
+        type=int,
+    )
+    train_subargparser.add_argument(
         '-s',
         '--seq-len',
         default=128,
