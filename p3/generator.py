@@ -55,7 +55,7 @@ class Step(tf.keras.Model):
         self.temperature = temperature
 
         # add a mask to prevent '[UNK]' from generating
-        skip_ids = self.ids_from_chars(['[UNK]'])[:, None]
+        skip_ids = self.char2id(['[UNK]'])[:, None]
         sparse_mask = tf.SparseTensor(
             values=[-float('inf')] * len(skip_ids),
             indices=skip_ids,
@@ -79,7 +79,7 @@ class Step(tf.keras.Model):
         predicted_logits = predicted_logits + self.prediction_mask
 
         predicted_ids = tf.random.categorical(predicted_logits, num_samples=1)
-        predicted_ids = tf.random.squeeze(predicted_logits, axis=-1)
+        predicted_ids = tf.squeeze(predicted_ids, axis=-1)
 
         predicted_chars = self.id2char(predicted_ids)
 
