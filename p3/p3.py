@@ -94,6 +94,14 @@ def main():
         metavar='N',
         type=int,
     )
+    train_subargparser.add_argument(
+        '-t',
+        '--epochs',
+        default=20,
+        help='number of training epochs',
+        metavar='N',
+        type=int,
+    )
 
     args = argparser.parse_args()
 
