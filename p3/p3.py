@@ -17,6 +17,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import random
+import string
 
 import tensorflow as tf
 
@@ -30,9 +32,33 @@ def main():
     )
     subargparser = argparser.add_subparsers(
         dest='mode',
-        help='train -h/--help',
+        help='{gen,train} -h/--help',
         metavar='mode',
         required=True,
+    )
+
+    gen_subargparser = subargparser.add_parser('gen')
+    gen_subargparser.add_argument(
+        '-c',
+        '--character-count',
+        default=64,
+        dest='char_cnt',
+        help='the number of character to generate',
+        metavar='N',
+        type=int,
+    )
+    gen_subargparser.add_argument(
+        '-m',
+        '--model-path',
+        help='model path',
+        metavar='path',
+        required=True,
+    )
+    gen_subargparser.add_argument(
+        '-p',
+        '--prefix',
+        help='autoregressive generation prefix',
+        metavar='word(s)',
     )
 
     train_subargparser = subargparser.add_parser('train')
@@ -190,6 +216,21 @@ def main():
 
             tf.saved_model.save(one_step, args.output)
 
+        case 'gen':
+            one_step = tf.saved_model.load(args.model_path)
+
+            if args.prefix == None:
+                args.prefix = random.choice(string.ascii_lowercase)
+
+            states = None
+            next_char = tf.constant([args.prefix])
+            result = [next_char]
+
+            for n in range(abs(args.char_cnt)):
+                 next_char, states = one_step.gen_one_step(next_char, states=states)
+                 result.append(next_char)
+
+            print(tf.strings.join(result)[0].numpy().decode('utf-8'))
 
 
 if __name__ == '__main__':
