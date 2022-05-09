@@ -61,6 +61,13 @@ def main():
         type=int,
     )
     train_subargparser.add_argument(
+        '-o',
+        '--output',
+        default='a.out',
+        help='model output name',
+        metavar='name',
+    )
+    train_subargparser.add_argument(
         '-u',
         '--buf-size',
         default=2 ** 14,
