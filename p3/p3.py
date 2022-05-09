@@ -52,6 +52,12 @@ def main():
         metavar='path',
         required=True,
     )
+    gen_subargparser.add_argument(
+        '-p',
+        '--prefix',
+        help='autoregressive generation prefix',
+        metavar='word(s)',
+    )
 
     train_subargparser = subargparser.add_parser('train')
     train_subargparser.add_argument(
