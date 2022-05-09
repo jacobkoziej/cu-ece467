@@ -30,8 +30,17 @@ def main():
     )
     subargparser = argparser.add_subparsers(
         dest='mode',
-        help='train -h/--help',
+        help='{gen,train} -h/--help',
         metavar='mode',
+        required=True,
+    )
+
+    gen_subargparser = subargparser.add_parser('gen')
+    gen_subargparser.add_argument(
+        '-m',
+        '--model-path',
+        help='model path',
+        metavar='path',
         required=True,
     )
 
@@ -189,6 +198,9 @@ def main():
                  result.append(next_char)
 
             tf.saved_model.save(one_step, args.output)
+
+        case 'gen':
+            one_step = tf.saved_model.load(args.model_path)
 
 
 
