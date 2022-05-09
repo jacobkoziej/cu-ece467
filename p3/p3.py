@@ -180,7 +180,7 @@ def main():
 
             # if we do not call generator.Step.gen_one_step() TensorFlow
             # will skip the serialization of our model, this is just a
-            # dirty workaround for tf.saved_mode.save() failing on us
+            # dirty workaround for tf.saved_model.save() failing on us
             states = None
             next_char = tf.constant(['FORCE BUILD'])
             result = [next_char]
