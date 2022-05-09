@@ -17,21 +17,70 @@
 import tensorflow as tf
 
 
-class Preprocess:
-    def gen_char2id(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
-        return tf.keras.layers.StringLookup(vocabulary=vocab)
+class Model(tf.keras.Model):
+    def __init__(self, vocab_size, embedding_dim, rnn_units):
+        super().__init__(self)
 
-    def gen_id2char(self, vocab: list[str]) -> tf.keras.layers.StringLookup:
-        return tf.keras.layers.StringLookup(invert=True, vocabulary=vocab)
+        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
+        self.gru = tf.keras.layers.GRU(
+            rnn_units,
+            return_sequences=True,
+            return_state=True,
+        )
+        self.dense = tf.keras.layers.Dense(vocab_size)
 
-    def gen_vec(self, input: list[str]) -> tf.RaggedTensor:
-        return tf.strings.unicode_split(input, input_encoding='UTF-8')
+    def call(self, inputs, states=None, return_state=False, training=False):
+        x = inputs
+        x = self.embedding(x, training=training)
 
-    def gen_vocab(self, input: str) -> list[str]:
-        return sorted(set(input))
+        if states is None:
+            states = self.gru.get_initial_state(x)
 
-    def gen_input_target_seq(self, input: list) -> tuple[list[str], list[str]]:
-        input_seq  = input[:-1]
-        target_seq = input[1:]
+        x, states = self.gru(x, initial_state=states, training=training)
+        x         = self.dense(x, training=training)
 
-        return input_seq, target_seq
+        if return_state:
+            return x, states
+        else:
+            return x
+
+
+class Step(tf.keras.Model):
+    def __init__(self, model, char2id, id2char, temperature=1.0):
+        super().__init__()
+
+        self.model       = model
+        self.char2id     = char2id
+        self.id2char     = id2char
+        self.temperature = temperature
+
+        # add a mask to prevent '[UNK]' from generating
+        skip_ids = self.char2id(['[UNK]'])[:, None]
+        sparse_mask = tf.SparseTensor(
+            values=[-float('inf')] * len(skip_ids),
+            indices=skip_ids,
+            dense_shape=[len(self.char2id.get_vocabulary())]
+        )
+        self.prediction_mask = tf.sparse.to_dense(sparse_mask)
+
+    @tf.function
+    def gen_one_step(self, inputs, states=None):
+        ids = self.char2id(tf.strings.unicode_split(inputs, 'UTF-8')).to_tensor()
+
+        predicted_logits, states = self.model(
+            inputs=ids,
+            states=states,
+            return_state=True,
+        )
+
+        # only use the last prediction and prevent '[UNK]'
+        predicted_logits = predicted_logits[:, -1, :]
+        predicted_logits = predicted_logits / self.temperature
+        predicted_logits = predicted_logits + self.prediction_mask
+
+        predicted_ids = tf.random.categorical(predicted_logits, num_samples=1)
+        predicted_ids = tf.squeeze(predicted_ids, axis=-1)
+
+        predicted_chars = self.id2char(predicted_ids)
+
+        return predicted_chars, states
