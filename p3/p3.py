@@ -37,6 +37,15 @@ def main():
 
     gen_subargparser = subargparser.add_parser('gen')
     gen_subargparser.add_argument(
+        '-c',
+        '--character-count',
+        default=64,
+        dest='char_cnt',
+        help='the number of character to generate',
+        metavar='N',
+        type=int,
+    )
+    gen_subargparser.add_argument(
         '-m',
         '--model-path',
         help='model path',
