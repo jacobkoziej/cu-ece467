@@ -157,6 +157,40 @@ def main():
             )
             print('DONE')
 
+            print('TRAINING MODEL')
+            model = generator.Model(
+                vocab_size=len(char2id.get_vocabulary()),
+                embedding_dim=abs(args.embed_dim),
+                rnn_units=abs(args.rnn_units),
+            )
+
+            loss = tf.losses.SparseCategoricalCrossentropy(from_logits=True)
+            model.compile(optimizer='adam', loss=loss)
+
+
+            checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+                filepath=f'./{args.output}_checkpoints/' + 'ckpt_{epoch}',
+                save_weights_only=True,
+            )
+
+            history = model.fit(dataset, epochs=abs(args.epochs), callbacks=[checkpoint_callback])
+            model.summary()
+
+            one_step = generator.Step(model, char2id, id2char)
+
+            # if we do not call generator.Step.gen_one_step() TensorFlow
+            # will skip the serialization of our model, this is just a
+            # dirty workaround for tf.saved_mode.save() failing on us
+            states = None
+            next_char = tf.constant(['FORCE BUILD'])
+            result = [next_char]
+            for n in range(64):
+                 next_char, states = one_step.gen_one_step(next_char, states=states)
+                 result.append(next_char)
+
+            tf.saved_model.save(one_step, args.output)
+
+
 
 if __name__ == '__main__':
     main()
