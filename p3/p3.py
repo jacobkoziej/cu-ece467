@@ -17,6 +17,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import random
+import string
 
 import tensorflow as tf
 
@@ -217,6 +219,18 @@ def main():
         case 'gen':
             one_step = tf.saved_model.load(args.model_path)
 
+            if args.prefix == None:
+                args.prefix = random.choice(string.ascii_lowercase)
+
+            states = None
+            next_char = tf.constant([args.prefix])
+            result = [next_char]
+
+            for n in range(abs(args.char_cnt)):
+                 next_char, states = one_step.gen_one_step(next_char, states=states)
+                 result.append(next_char)
+
+            print(tf.strings.join(result)[0].numpy().decode('utf-8'))
 
 
 if __name__ == '__main__':
