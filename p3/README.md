@@ -57,6 +57,19 @@ The following project was implemented using [TensorFlow] following the
 official [tutorial on text generation with an RNN] ([permalink]).
 
 
+### Inspiration
+
+The inspiration for this project came from text suggestions that appear
+on modern software keyboards (such as Gboard) and shell completions
+(such as those found in Zsh).  Being someone who's rather
+privacy-conscious and unhappy about data harvesting, I opt to disable
+personalized completions in my software keyboards which comes at the
+expense of slower typing.  Although I knew I would never come close to
+the accuracy of modern keyboards, I was still interested in how well a
+"DIY" message completion system would perform, given my messages with
+friends.
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
 [TensorFlow]: https://www.tensorflow.org/
