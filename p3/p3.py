@@ -71,7 +71,7 @@ def main():
     train_subargparser.add_argument(
         '-b',
         '--batch-size',
-        default=64,
+        default=256,
         dest='batch_size',
         help='training batch size',
         metavar='N',
@@ -80,7 +80,7 @@ def main():
     train_subargparser.add_argument(
         '-e',
         '--embed-dim',
-        default=256,
+        default=1024,
         dest='embed_dim',
         help='model embedding dimension',
         metavar='N',
@@ -105,7 +105,7 @@ def main():
     train_subargparser.add_argument(
         '-s',
         '--seq-len',
-        default=128,
+        default=256,
         dest='seq_len',
         help='training sequence length',
         metavar='N',
@@ -114,7 +114,7 @@ def main():
     train_subargparser.add_argument(
         '-r',
         '--rnn-units',
-        default=128,
+        default=1024,
         dest='rnn_units',
         help='number of model RNN units',
         metavar='N',
@@ -123,7 +123,7 @@ def main():
     train_subargparser.add_argument(
         '-t',
         '--epochs',
-        default=20,
+        default=256,
         help='number of training epochs',
         metavar='N',
         type=int,
