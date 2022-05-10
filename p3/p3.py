@@ -133,13 +133,13 @@ def main():
 
     match args.mode:
         case 'train':
-            print('Decoding discord chat dumps...', end='')
+            print('Decoding discord chat dumps...', end='', flush=True)
             text = [ ]
             for dump in args.files:
                 text += discord.decode(dump)
             print('DONE')
 
-            print('Generating training targets...', end='')
+            print('Generating training targets...', end='', flush=True)
             text = '\n'.join(text)
 
             chars = tf.strings.unicode_split(
@@ -167,7 +167,7 @@ def main():
             )
             print('DONE')
 
-            print('Generating training batches...', end='')
+            print('Generating training batches...', end='', flush=True)
             args.batch_size = abs(args.batch_size)
             args.buf_size   = abs(args.buf_size)
 
@@ -183,7 +183,7 @@ def main():
             )
             print('DONE')
 
-            print('TRAINING MODEL')
+            print('TRAINING MODEL', flush=True)
             model = generator.Model(
                 vocab_size=len(char2id.get_vocabulary()),
                 embedding_dim=abs(args.embed_dim),
