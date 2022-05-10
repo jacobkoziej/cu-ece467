@@ -16,3 +16,26 @@ have seen wide success in the field of Natural Language Processing
 which not only perform better but are more versatile.  Regardless of
 performance, the following project utilizes RNNs to a varying degree of
 success.
+
+
+## Usage
+
+Help:
+
+```
+./p3.py -h
+```
+
+Training:
+
+```
+./p3.py train dump.json [dump.json ...]
+```
+
+Generation:
+
+```
+./p3.py gen -m model_path
+```
+
+To view additional options for each mode run `./p3.py [mode] -h`.
