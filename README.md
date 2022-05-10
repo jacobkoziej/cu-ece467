@@ -11,6 +11,7 @@ found on the [course page].
 
 * Text Categorization `p1/`
 * Parsing `p2/`
+* RNNs `p3/`
 
 
 ## Runtime Dependencies
