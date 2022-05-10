@@ -48,6 +48,12 @@ def main():
         type=int,
     )
     gen_subargparser.add_argument(
+        '-i',
+        '--interactive',
+        action='store_true',
+        help='enable interactive mode',
+    )
+    gen_subargparser.add_argument(
         '-m',
         '--model-path',
         help='model path',
@@ -217,20 +223,43 @@ def main():
             tf.saved_model.save(one_step, args.output)
 
         case 'gen':
+            print('Loading model...', end='', flush=True)
             one_step = tf.saved_model.load(args.model_path)
+            print('DONE')
 
-            if args.prefix == None:
-                args.prefix = random.choice(string.ascii_lowercase)
+            if args.interactive:
+                while True:
+                    input_str = None
+                    try:
+                        input_str = input('input: ')
+                    except EOFError:
+                        print()  # newline
+                        break
 
-            states = None
-            next_char = tf.constant([args.prefix])
-            result = [next_char]
+                    states = None
+                    next_char = tf.constant([input_str])
+                    result = [next_char]
+                    while next_char[0].numpy().decode('utf-8') != '\n':
+                        next_char, states = one_step.gen_one_step(next_char, states=states)
+                        result.append(next_char)
 
-            for n in range(abs(args.char_cnt)):
-                 next_char, states = one_step.gen_one_step(next_char, states=states)
-                 result.append(next_char)
+                    print('completion: ' + tf.strings.join(result)[0].numpy().decode('utf-8'), end='')
 
-            print(tf.strings.join(result)[0].numpy().decode('utf-8'))
+                print('Bye!')
+
+            else:
+                if args.prefix == None:
+                    args.prefix = random.choice(string.ascii_lowercase)
+
+                states = None
+                next_char = tf.constant([args.prefix])
+                result = [next_char]
+
+                for n in range(abs(args.char_cnt)):
+                     next_char, states = one_step.gen_one_step(next_char, states=states)
+                     result.append(next_char)
+
+                print(tf.strings.join(result)[0].numpy().decode('utf-8'))
 
 
 if __name__ == '__main__':
