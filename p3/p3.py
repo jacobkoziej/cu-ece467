@@ -61,6 +61,12 @@ def main():
         required=True,
     )
     gen_subargparser.add_argument(
+        '-n',
+        '--predict',
+        action='store_true',
+        help='enable predicted responses in interactive mode',
+    )
+    gen_subargparser.add_argument(
         '-p',
         '--prefix',
         help='autoregressive generation prefix',
@@ -228,22 +234,41 @@ def main():
             print('DONE')
 
             if args.interactive:
-                while True:
-                    input_str = None
-                    try:
-                        input_str = input('input: ')
-                    except EOFError:
-                        print()  # newline
-                        break
+                if args.predict:
+                    while True:
+                        input_str = None
+                        try:
+                            input_str = input('input: ')
+                        except EOFError:
+                            print()  # newline
+                            break
 
-                    states = None
-                    next_char = tf.constant([input_str])
-                    result = [next_char]
-                    while next_char[0].numpy().decode('utf-8') != '\n':
-                        next_char, states = one_step.gen_one_step(next_char, states=states)
-                        result.append(next_char)
+                        states = None
+                        next_char = tf.constant([input_str + '\n'])
+                        result = [ ]
+                        while next_char[0].numpy().decode('utf-8') != '\n':
+                            next_char, states = one_step.gen_one_step(next_char, states=states)
+                            result.append(next_char)
 
-                    print('completion: ' + tf.strings.join(result)[0].numpy().decode('utf-8'), end='')
+                        print('prediction: ' + tf.strings.join(result)[0].numpy().decode('utf-8'), end='')
+
+                else:
+                    while True:
+                        input_str = None
+                        try:
+                            input_str = input('input: ')
+                        except EOFError:
+                            print()  # newline
+                            break
+
+                        states = None
+                        next_char = tf.constant([input_str])
+                        result = [next_char]
+                        while next_char[0].numpy().decode('utf-8') != '\n':
+                            next_char, states = one_step.gen_one_step(next_char, states=states)
+                            result.append(next_char)
+
+                        print('completion: ' + tf.strings.join(result)[0].numpy().decode('utf-8'), end='')
 
                 print('Bye!')
 
