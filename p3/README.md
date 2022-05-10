@@ -51,5 +51,14 @@ of this project, feel free to do so using messages from your own servers
 or other public servers.
 
 
+## Implementation Details
+
+The following project was implemented using [TensorFlow] following the
+official [tutorial on text generation with an RNN] ([permalink]).
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
+[TensorFlow]: https://www.tensorflow.org/
+[tutorial on text generation with an RNN]: https://www.tensorflow.org/text/tutorials/text_generation
+[permalink]: https://github.com/tensorflow/text/blob/16235e4ad31c572e0cbe40a5decb54fdedc6931e/docs/tutorials/text_generation.ipynb
