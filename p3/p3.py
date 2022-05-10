@@ -48,11 +48,23 @@ def main():
         type=int,
     )
     gen_subargparser.add_argument(
+        '-i',
+        '--interactive',
+        action='store_true',
+        help='enable interactive mode',
+    )
+    gen_subargparser.add_argument(
         '-m',
         '--model-path',
         help='model path',
         metavar='path',
         required=True,
+    )
+    gen_subargparser.add_argument(
+        '-n',
+        '--predict',
+        action='store_true',
+        help='enable predicted responses in interactive mode',
     )
     gen_subargparser.add_argument(
         '-p',
@@ -133,13 +145,13 @@ def main():
 
     match args.mode:
         case 'train':
-            print('Decoding discord chat dumps...', end='')
+            print('Decoding discord chat dumps...', end='', flush=True)
             text = [ ]
             for dump in args.files:
                 text += discord.decode(dump)
             print('DONE')
 
-            print('Generating training targets...', end='')
+            print('Generating training targets...', end='', flush=True)
             text = '\n'.join(text)
 
             chars = tf.strings.unicode_split(
@@ -167,7 +179,7 @@ def main():
             )
             print('DONE')
 
-            print('Generating training batches...', end='')
+            print('Generating training batches...', end='', flush=True)
             args.batch_size = abs(args.batch_size)
             args.buf_size   = abs(args.buf_size)
 
@@ -183,7 +195,7 @@ def main():
             )
             print('DONE')
 
-            print('TRAINING MODEL')
+            print('TRAINING MODEL', flush=True)
             model = generator.Model(
                 vocab_size=len(char2id.get_vocabulary()),
                 embedding_dim=abs(args.embed_dim),
@@ -217,20 +229,62 @@ def main():
             tf.saved_model.save(one_step, args.output)
 
         case 'gen':
+            print('Loading model...', end='', flush=True)
             one_step = tf.saved_model.load(args.model_path)
+            print('DONE')
 
-            if args.prefix == None:
-                args.prefix = random.choice(string.ascii_lowercase)
+            if args.interactive:
+                if args.predict:
+                    while True:
+                        input_str = None
+                        try:
+                            input_str = input('input: ')
+                        except EOFError:
+                            print()  # newline
+                            break
 
-            states = None
-            next_char = tf.constant([args.prefix])
-            result = [next_char]
+                        states = None
+                        next_char = tf.constant([input_str + '\n'])
+                        result = [ ]
+                        while next_char[0].numpy().decode('utf-8') != '\n':
+                            next_char, states = one_step.gen_one_step(next_char, states=states)
+                            result.append(next_char)
 
-            for n in range(abs(args.char_cnt)):
-                 next_char, states = one_step.gen_one_step(next_char, states=states)
-                 result.append(next_char)
+                        print('prediction: ' + tf.strings.join(result)[0].numpy().decode('utf-8'), end='')
 
-            print(tf.strings.join(result)[0].numpy().decode('utf-8'))
+                else:
+                    while True:
+                        input_str = None
+                        try:
+                            input_str = input('input: ')
+                        except EOFError:
+                            print()  # newline
+                            break
+
+                        states = None
+                        next_char = tf.constant([input_str])
+                        result = [next_char]
+                        while next_char[0].numpy().decode('utf-8') != '\n':
+                            next_char, states = one_step.gen_one_step(next_char, states=states)
+                            result.append(next_char)
+
+                        print('completion: ' + tf.strings.join(result)[0].numpy().decode('utf-8'), end='')
+
+                print('Bye!')
+
+            else:
+                if args.prefix == None:
+                    args.prefix = random.choice(string.ascii_lowercase)
+
+                states = None
+                next_char = tf.constant([args.prefix])
+                result = [next_char]
+
+                for n in range(abs(args.char_cnt)):
+                     next_char, states = one_step.gen_one_step(next_char, states=states)
+                     result.append(next_char)
+
+                print(tf.strings.join(result)[0].numpy().decode('utf-8'))
 
 
 if __name__ == '__main__':
