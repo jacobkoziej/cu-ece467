@@ -39,3 +39,17 @@ Generation:
 ```
 
 To view additional options for each mode run `./p3.py [mode] -h`.
+
+
+## Dump Format
+
+All Discord chats were exported using [Tyrrrz]'s (Oleksii Holub
+[DiscordChatExporter] in the JSON file format.  Since the messages used
+for training and generation were from my own friend group, they,
+unfortunately, cannot be shared.  If you wish to reproduce the results
+of this project, feel free to do so using messages from your own servers
+or other public servers.
+
+
+[Tyrrrz]: https://tyrrrz.me/
+[DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
