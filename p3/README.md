@@ -143,6 +143,42 @@ hidden layer to an output of the same dimension as the input character
 embedding layer.
 
 
+#### Tuning
+
+The architecture as described above leaves four parameters to be tuned
+to achieve "optimal" accuracy, those being: GRU count, embedding
+dimensions, batch size, and sequence length.  To simplify tuning the
+parameters were tied together into pairs (ie. GRU count = embedding
+dimensions and batch size = sequence length).  While training,
+cross-entropy was used to calculate the loss between epochs.  If a
+model's loss increased before 128 epochs, it was discarded.
+
+Initial values for the parameters started at 256 for the embedding
+dimension and 64 for the sequence length.  All parameters were kept as
+powers of two so that they could easily be doubled or halved.
+
+The embedding dimension was initially increased to 1024 as going any
+higher would increase the loss after about 20 epochs.  This value does
+appear to make sense as it is close to the training vocabulary size.
+Since the vocabulary size is quite large, having this increased the size
+most likely decreased collisions between characters during training.
+
+Next, the sequence length increased up to 512 characters.  Although
+smaller sequence sizes did see initial loss drop off quite fast (going
+below 1.5 within eight epochs), loss did pick up after about 30 epochs.
+At 256 the sequence length appeared to hit an asymptote at 1.0 loss as
+the full 128 epochs did not see any significant change in loss for over
+60 epochs.  Ultimately 512 characters did break through this asymptote,
+but it did come at the cost of requiring far more epochs (over 80), but
+at 128 epochs it did manage to reach a loss of only 0.85.  Subsequently,
+the epoch count was increased to 256, and the loss reached an asymptotic
+loss at around 0.75.
+
+Ultimately, I was happy with the loss achieved given such erratic input.
+The generated output did resemble the messaging style of the individuals
+who's messages did make it into the training data.
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
 [TensorFlow]: https://www.tensorflow.org/
