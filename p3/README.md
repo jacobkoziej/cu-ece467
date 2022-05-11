@@ -99,6 +99,50 @@ sequences of recognizable gibberish (ie. strings of words that resembled
 the style of someone in the group chat).
 
 
+## Architecture Experimentation
+
+Training a language model on informal messages (especially for an
+all-purpose group chat) brings with it a set of unique challenges not
+usually found while training with a corpus of a distinct style.
+
+To give some context to the erratic corpus used for training, here are
+some quick statistics:
+* 162,310 total messages
+* 3,600,253 total characters
+* 1,099 unique characters
+* message lengths between 1 to 2,000 characters
+* message content:
+	* topics that range from school to personal life
+	* emojis (including custom emojis in the form `:emoji:`)
+	* mentions (in the form `@username`)
+	* in-line links, LaTeX, & code blocks
+	* copypastas & spam walls
+	* keyboard mashes
+
+As evident, such a corpus shares no distinct "style" beyond it being an
+organized collection of chaos.  Regardless, there are ways around this
+by using character embeddings.  Although word embeddings and subword
+embeddings have proven to be very successful, character embeddings were
+chosen simply for the property of being capable of circumventing minor
+spelling mistakes.  Character embeddings also remove any distinction
+between what qualifies as a word or subword rather, a sequence is
+understood for what it is: characters assigned a meaning.  As such, the
+input layer of the model consisted of a character embedding layer that
+had the dimension of the input vocabulary and an additional token for
+unrecognized characters.
+
+The internal hidden layer consisted of a GRU.  The reasoning for
+choosing this type of layer was to turn the language model into an RNN
+and to increase efficiency compared to an LSTM.  An increase in
+efficiency was a desirable trait as my primary work machine is rather
+underpowered, and access to the school compute server was in high demand
+at this time of the semester.
+
+Lastly, the output layer consisted of a dense layer to map the GRU
+hidden layer to an output of the same dimension as the input character
+embedding layer.
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
 [TensorFlow]: https://www.tensorflow.org/
