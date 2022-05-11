@@ -179,6 +179,34 @@ The generated output did resemble the messaging style of the individuals
 who's messages did make it into the training data.
 
 
+### Results
+
+Going into this project, I had very high expectations for the quality of
+the generated completions.  Ultimately, I feel let down by my lack of
+background in a deep learning library such as TensorFlow, as this was my
+first programming project in a while, where I felt out of control of
+what I could create.  Atop of the craziness of the end of the semester
+and there just not being a whole lot of time for experimentation, I had
+to settle for just a few hours of tuning.
+
+Besides all the pitfalls mentioned beforehand, I feel like my language
+model performed rather well.  Not only are most generated messages
+recognizable as someone's style of messaging, but messages for the most
+part, consist of real worlds, even if the sentences don't have much
+meaning.  But this usually happens after neumerous words, which wasn't
+the intent of this project *anyways*.  In general, generated words
+following an immediate input sequence seem to make sense.
+
+Most surprising of all, training in sequences does seem to "just work."
+Although fixed-length sequences were unintended, they did give way to
+the predicted responses feature of my project.  I was actually surprised
+at how accurate some of these responses could be given how people in the
+group chat respond to one another.  Although some of these responses are
+great, if they're anything more than a handful of words, they quickly
+seem to lose meaning as expected.  Anyways, great *"bug"* turned
+feature.
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
 [TensorFlow]: https://www.tensorflow.org/
