@@ -70,6 +70,35 @@ the accuracy of modern keyboards, I was still interested in how well a
 friends.
 
 
+### Training & Testing
+
+Ideally, while training an RNN for text completion, each individual
+message would be fed into the RNN.  Unfortunately, given the time
+constraints of the project, and a lack of experience with TensorFlow,
+training was instead done using batches of characters (though this
+constraint ultimately grew into the "predicted response" feature of the
+language model).  In doing so, sequences would be of the same length and
+not require padding.  This decision came with the trade-off of having no
+start-of-sentence (SOS) or end-of-sentence (EOS) tokens.  As a
+compromise, any character could begin a sequence, and the newline
+character is treated as the EOS token.  The reasoning behind this was
+that the character was placed between each message while concatenating
+all the messages into one contiguous string.
+
+Since the generated text originated from personal messages between
+friends, there was no "true" empirical method to evaluate the validity
+of the generated sequences.  As will be discussed later, training
+messages varied wildly in almost all aspects (length, content, style,
+etc.).  Instead of relying on an empirical system, human judgment became
+a substitute.  Although human judgment cannot assign a value to the
+accuracy of the generated text, it does fall in line with Steven
+Pinker's beliefs that grammatical rules of a language are themselves as
+valid as we make them out to be.  Ultimately training was tuned until
+sequences turned from unrecognizable gibberish (random characters) to
+sequences of recognizable gibberish (ie. strings of words that resembled
+the style of someone in the group chat).
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
 [TensorFlow]: https://www.tensorflow.org/
