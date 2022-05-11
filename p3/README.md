@@ -99,7 +99,7 @@ sequences of recognizable gibberish (ie. strings of words that resembled
 the style of someone in the group chat).
 
 
-## Architecture Experimentation
+### Architecture Experimentation
 
 Training a language model on informal messages (especially for an
 all-purpose group chat) brings with it a set of unique challenges not
