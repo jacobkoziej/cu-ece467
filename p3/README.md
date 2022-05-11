@@ -207,6 +207,105 @@ seem to lose meaning as expected.  Anyways, great *"bug"* turned
 feature.
 
 
+### Sample Output
+
+Text completion:
+
+```
+input:      cooper union
+completion: cooper union for the advancement of science and art was nothing worse all dimensions
+```
+
+```
+input:      i am
+completion: i am ready 🤔
+```
+
+```
+input:      i am in
+completion: i am in pain
+```
+
+```
+input:      do y'all wanna go
+completion: do y'all wanna go to office hours for me to check if they refuse
+```
+
+```
+input:      can we go
+completion: can we go back to cars for the funny
+```
+
+```
+input:      should we
+completion: should we call
+```
+
+```
+input:      nlp is
+completion: nlp is really rough linux or something
+```
+
+```
+input:      linux is
+completion: linux is so weird
+```
+
+Response prediction:
+
+```
+input:      guys i think i'm late
+prediction: oop
+```
+
+```
+input:      i am sad
+prediction: nooo
+```
+
+```
+input:      i am so happy today
+prediction: YO
+```
+
+```
+input:      i'm gonna buy some oreos
+prediction: ooooh idk what to ur dorm again
+```
+
+```
+input:      pain
+prediction: DNJSNSJNSJSNS
+```
+
+```
+input:      lol
+prediction: i know right
+```
+
+Funny output:
+
+```
+input:      cope
+completion: copecopecopecopecopecopecopecopecopecopecopecopecopecope
+```
+
+```
+input:      i love cooper union
+completion: i love cooper union?
+```
+
+```
+input:      suffering makes you
+completion: suffering makes you a better engineer. Suffering makes you a better engineer. It's called we do a little trolling
+```
+
+```
+input:      can you save me a seat?
+prediction: See pinned message in #blackmail
+```
+
+
 [Tyrrrz]: https://tyrrrz.me/
 [DiscordChatExporter]: https://github.com/Tyrrrz/DiscordChatExporter
 [TensorFlow]: https://www.tensorflow.org/
